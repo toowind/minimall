@@ -1,0 +1,253 @@
+view,
+scroll-view,
+swiper,
+swiper-item,
+movable-area,
+movable-view,
+cover-view,
+cover-image,
+icon,
+text,
+rich-text,
+progress,
+button,
+checkbox-group,
+checkbox,
+form,
+input,
+label,
+picker,
+picker-view,
+radio-group,
+radio,
+slider,
+switch,
+textarea,
+navigator,
+functional-page-navigator,
+image,
+video,
+camera,
+live-player,
+live-pusher,
+map,
+canvas,
+open-data,
+web-view,
+ad {
+	box-sizing: border-box;
+}
+
+input,
+textarea,
+select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	border: 0;
+	outline: none;
+}
+
+button,
+input[type="submit"] {
+	border: none;
+	background: none;
+	appearance: none;
+	outline: none;
+}
+
+button,
+input[type="button"] {
+	border: none;
+	appearance: none;
+	outline: none;
+}
+
+label {
+	font-weight: 100;
+}
+
+textarea {
+	resize: none;
+}
+
+button,
+input,
+select,
+textarea {
+	font-size: 100%;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner,
+textarea::-moz-focus-inner {
+	border: 0px;
+	padding: 0px;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner,
+textarea::-moz-focus-inner {
+	border: 0px;
+	padding: 0px;
+}
+
+/* 自定义公共样式 */
+.ml0 {
+	margin-left: 0;
+}
+
+.mt0 {
+	margin-top: 0;
+}
+
+.mr0 {
+	margin-right: 0;
+}
+
+.mb0 {
+	margin-bottom: 0;
+}
+
+.pl0 {
+	padding-left: 0;
+}
+
+.pt0 {
+	padding-top: 0;
+}
+
+.pr0 {
+	padding-right: 0;
+}
+
+.pb0 {
+	padding-bottom: 0;
+}
+
+.clearfix {
+	zoom: 1;
+}
+
+.clearfix::before,
+.clearfix::after {
+	display: table;
+	content: "";
+}
+
+.clearfix::after {
+	clear: both;
+}
+
+.wn {
+	/* 强制不换行 */
+	word-wrap: normal;
+	white-space: nowrap;
+}
+
+.wb {
+	/* 强制换行 */
+	white-space: normal;
+	word-wrap: break-word;
+	word-break: break-all;
+}
+
+.wp {
+	/* 保持空白序列*/
+	overflow: hidden;
+	text-align: left;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	word-break: break-all;
+}
+
+.t-j {
+	text-align: justify;
+	text-justify: inter-ideograph;
+	/*IE*/
+}
+
+/* css溢出隐藏 */
+.css-hide {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.css-hide-1 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.css-hide-2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-break: break-word;
+}
+
+.css-hide-3 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	word-break: break-word;
+}
+
+.tl {
+	text-align: left !important;
+}
+
+.tc {
+	text-align: center !important;
+}
+
+.tr {
+	text-align: right !important;
+}
+
+.fl {
+	float: left;
+}
+
+.fr {
+	float: right;
+}
+
+.cp {
+	cursor: pointer;
+}
+
+/* 溢出样式 */
+.ofh {
+	overflow: hidden;
+}
+
+.ofs {
+	overflow: scroll;
+}
+
+.ofa {
+	overflow: auto;
+}
+
+.ofv {
+	overflow: visible;
+}
+
+/* 垂直对齐方式 */
+.vt {
+	vertical-align: top;
+}
+
+.vm {
+	vertical-align: middle;
+}
+
+.vb {
+	vertical-align: bottom;
+}
