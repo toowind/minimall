@@ -1,5 +1,5 @@
 import MinRequest from '../utils/request.js'
-import {BASE_API} from '../utils/env.js'
+import {} from '../utils/env.js'
 import {getToken} from '../utils/auth.js'
 const minRequest = new MinRequest();
 

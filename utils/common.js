@@ -47,11 +47,12 @@ export default COMMON = (function (_undefined) {
             },
             // 前端常量值
             constant: {
-				BASE_API: BASE_API, // 公共接口api
-				TOKEN_KEY: '', // 前端和后端约定, 特定key, 请求时带入请求头.
+				BASE_API: BASE_API // 公共接口api
 			}
         },
-        methods: {},
+        methods: {
+			
+		},
         common: {
             // type 类型判断
             typeFn: {
