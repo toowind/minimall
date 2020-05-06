@@ -831,7 +831,9 @@ export default COMMON = (function (_undefined) {
                 }
             },
             // StorageFn 储存操作
-            storageFn: {},
+            storageFn: {
+				
+			},
             // OtherFn 其他方法
             otherFn: {
                 /**

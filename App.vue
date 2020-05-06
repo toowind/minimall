@@ -1,36 +1,70 @@
 <script>
 	import Vue from 'vue';
+	import {setToken} from '@/utils/auth.js'
 	export default {
 		onLaunch: function() {
-			uni.getSystemInfo({  
-				success:function(e){ 
-					Vue.prototype.statusBar = e.statusBarHeight;
-					// #ifndef MP  
-					if(e.platform == 'android') {  
-						Vue.prototype.customBar = e.statusBarHeight + 50; 
-					}else {  
-						Vue.prototype.customBar = e.statusBarHeight + 45;  
-					}  
-					// #endif  
-		
-					// #ifdef MP-WEIXIN  
-					let custom = wx.getMenuButtonBoundingClientRect();
-					Vue.prototype.customBar = custom.bottom + custom.top - e.statusBarHeight;
-					// #endif  
-		
-					// #ifdef MP-ALIPAY  
-					Vue.prototype.customBar = e.statusBarHeight + e.titleBarHeight;
-					// #endif  
-				}  
-			})  
+			this.init();
 		},
 		onShow: function() {},
-		onHide: function() {}
+		onHide: function() {},
+		methods: {
+			init () {
+				let that = this;
+				that.login();
+				that.getSystemInfo();
+			},
+			login () {
+				try {
+					uni.login({
+					  provider: 'weixin',
+					  success: async (loginRes) => {
+						  let that = this,
+							  {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
+							if (status === that.$resCode.successCode) {
+								let tempAuth = data;
+								setToken(data.token);
+								uni.setStorageSync('tempAuth', JSON.stringify(data));
+							}
+					  }
+					});
+				} catch (e) {
+					console.log(e, 'error -> uni.login || _wechatStart');
+				}
+			},
+			// 获取系统信息
+			getSystemInfo () {
+				let that = this;
+				uni.getSystemInfo({
+					success:function(e){
+						Vue.prototype.statusBar = e.statusBarHeight;
+						// #ifndef MP  
+						if(e.platform == 'android') {  
+							Vue.prototype.customBar = e.statusBarHeight + 50; 
+						}else {  
+							Vue.prototype.customBar = e.statusBarHeight + 45;  
+						}  
+						// #endif  
+						
+						// #ifdef MP-WEIXIN  
+						Vue.prototype.statusBar = e.statusBarHeight;
+						let custom = wx.getMenuButtonBoundingClientRect();
+						Vue.prototype.customBar = custom.bottom + custom.top - e.statusBarHeight;
+						// #endif  
+						
+						// #ifdef MP-ALIPAY  
+						Vue.prototype.statusBar = e.statusBarHeight;
+						Vue.prototype.customBar = e.statusBarHeight + e.titleBarHeight;
+						// #endif  
+					}  
+				});
+			}
+		}
 	}
 </script>
 
-<style>
-	/*每个页面公共css */
-	
-	@import url("./assets/css/common.css");
+<style lang="scss">
+/*每个页面公共css */
+@import "colorui/main.css";
+@import "colorui/icon.css";
+@import url("./assets/css/common.scss");
 </style>

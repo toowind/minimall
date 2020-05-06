@@ -17,46 +17,15 @@
 const TokenKey = 'token';
 
 export function getToken() {
-	return new Promise((resolve, reject) => {
-		uni.getStorage({
-			key: TokenKey,
-			success: function (res) {
-				resolve(res);
-			},
-			fail:function(err){
-				reject(false)
-			}
-		});
-	});
+	return uni.getStorageSync(TokenKey);
 }
 
 export function setToken(token) {
-	return new Promise((resolve, reject) => {
-		uni.setStorage({
-			key: TokenKey,
-			data: JSON.stringify(token),
-			success: function (res) {
-				resolve(res);
-			},
-			fail:function(err){
-				reject(false)
-			}
-		});
-	});
+	return uni.setStorageSync(TokenKey, token);
 }
 
 export function removeToken() {
-    return new Promise((resolve, reject) => {
-    	uni.getStorage({
-    		key: TokenKey,
-    		success: function (res) {
-    			resolve(res);
-    		},
-    		fail:function(err){
-    			reject(false);
-    		}
-    	});
-    });
+	return uni.removeStorageSync(TokenKey);
 }
 
 export function getUserInfo() {}

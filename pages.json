@@ -1,10 +1,55 @@
 {
+	"condition": {
+		"current": 0,
+		"list": [{
+			"name": "gd",
+			"path": "pages/goodsDetails/goodsDetails",
+			"query": "goods_id=43694955073"
+			
+		}]
+	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/goodsSearch/goodsSearch",
+			"style": {
+				"navigationBarTitleText": "商品搜索",
+				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/activity/freeShippingProd/freeShippingProd",
+			"style": {
+				"navigationBarTitleText": "9.9专区",
+				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/activity/optimizationProd/optimizationProd",
+			"style": {
+				"navigationBarTitleText": "每日优选",
+				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/activity/coupon/coupon",
+			"style": {
+				"navigationBarTitleText": "优惠券",
+				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/goodsDetails/goodsDetails",
+			"style": {
+				"navigationBarTitleText": "商品详情",
+				"onReachBottomDistance": 0
 			}
 		},
 		{
@@ -18,7 +63,7 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "京东分销",
 		"navigationBarBackgroundColor": "#FFFFFF",
-		"backgroundColor": "#FB4144"
+		"backgroundColor": "#F6F6F6"
 	},
 	"tabBar": {
 	    "color": "#505153",

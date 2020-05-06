@@ -52,10 +52,9 @@ class MinRequest {
     options.dataType = options.dataType || dataType;
     options.url = MinRequest[isCompleteURL](options.url) ? options.url : (options.baseURL + options.url);
     options.header = {...options.header, ...this[config].header};
-	options.data = Object.assign(options.data, data);
+	options.data = Object.assign(options.data ? options.data : {}, data);
     options.method = options.method || method;
     options = {...options, ...MinRequest[requestBefore](options)};
-	
     return new Promise((resolve, reject) => {
       options.success = function (res) {
         resolve(MinRequest[requestAfter](res))
@@ -63,7 +62,6 @@ class MinRequest {
       options.fail= function (err) {
         reject(MinRequest[requestAfter](err))
       }
-	  console.log(options)
       uni.request(options)
     })
   }
