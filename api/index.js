@@ -33,6 +33,7 @@ export default {
   Qapis: {},
   Kapis: {
 	_wechatStart: (data) => minRequest.get('/?s=Jd/User/wechatStart', {data: JSON.stringify({...data})}), // 静默登录
+	_wechatLogin: (data) => minRequest.get('/?s=Jd/User/wechatLogin', {data: JSON.stringify({...data})}), // 授权登录 - 正式登录
   	_getHomeList: (data) => minRequest.get('/?s=Jd/Product/getHomeList', {data: JSON.stringify({...data})}), // 首页导航数据
 	_getGoodsList: (data) => minRequest.post('?s=Jd/Product/getGoodsList', {data: JSON.stringify({...data})}), // 首页商品列表数据
 	_getGoodsListByKeyword: (data) => minRequest.post('?s=Jd/Product/getGoodsListByKeyword', {data: JSON.stringify({...data})}), // 搜索接口

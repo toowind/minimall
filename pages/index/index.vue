@@ -48,7 +48,7 @@
 			</view>
 			<view class="nav-list">
 				<view class="nav-item" 
-					  @tap="jumpToPage(nav.jumpUrl)"
+					  @tap="jumpToPage(nav)"
 					  v-for="(nav, index) in navListArr" 
 					  :key="nav.imgUrl">
 					<!-- #ifdef MP -->
@@ -82,7 +82,8 @@
 					</view>
 				</view>
 			</scroll-view>
-			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>
+			<!-- <button @getuserinfo="getUserInfo" type="default" style="width: 100%;height: 50px;" open-type="getUserInfo">2222</button> -->
+			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
 			<GoodsList 
 				:scrollTop="scrollTop"
 				:goodsList="goodsList"
@@ -109,6 +110,7 @@
 <script>
 	import uniPopup from '@/components/uni-popup/uni-popup.vue'
 	import GoodsList from '@/components/goodsList/goodsList.vue'
+	import {loginStatus} from '@/utils/auth.js'
 	export default {
 		data() {
 			let that = this;
@@ -130,26 +132,30 @@
 					{ 
 						text: '转换链接', 
 						imgUrl: require('@/static/images/index/home_one_icon@2x.png'), 
-						jumpUrl: '' ,
-						id: 1
+						jumpUrl: '../spinChain/spinChain' ,
+						id: 1,
+						isLogin: true
 					},
 					{ 
 						text: '9.9包邮', 
 						imgUrl: require('@/static/images/index/home_two_icon@2x.png'), 
 						jumpUrl: '../activity/freeShippingProd/freeShippingProd',
-						id: 2
+						id: 2,
+						isLogin: false
 					},
 					{ 
 						text: '每日优选', 
 						imgUrl: require('@/static/images/index/home_three_icon@2x.png'), 
 						jumpUrl: '../activity/optimizationProd/optimizationProd' ,
-						id: 3
+						id: 3,
+						isLogin: false
 					},
 					{ 
 						text: '优惠券', 
 						imgUrl: require('@/static/images/index/home_four_icon@2x.png'), 
 						jumpUrl: '../activity/coupon/coupon',
-						id: 4
+						id: 4,
+						isLogin: false
 					}
 				],
 				clipboardData: null, // 剪切板数据
@@ -173,6 +179,7 @@
 			that.readyInit();
 		},
 		onShow() {
+			console.log('onshow')
 			let that = this;
 			that.getClipboardData();
 		},
@@ -233,11 +240,22 @@
 			},
 			// 点击商品项回调
 			tapGoodsItemHandler (goods_id) {
-				this.jumpToPage('../goodsDetails/goodsDetails', {goods_id});
+				this.jumpToPage({jumpUrl: '../goodsDetails/goodsDetails'}, {goods_id});
 			},
 			// 导航跳转到指定页面
-			jumpToPage (url, params) {
-				let queryStr = '?';
+			jumpToPage ({jumpUrl, isLogin}, params) {
+				console.log('ok')
+				let queryStr = '?',
+					url = jumpUrl;
+				if (isLogin) {
+					let ls = loginStatus();
+					if (!ls) {
+						uni.navigateTo({
+							url: '../authLogin/authLogin'
+						});
+						return false
+					};
+				}
 				if (params && Object.keys(params).length > 0) {
 					for (let key in params) {
 						queryStr += key + '=' + params[key] + '&';
@@ -312,6 +330,7 @@
 				let that = this;
 				uni.getClipboardData({
 				    success: function (res) {
+						console.log(res);
 						let data = String(res.data).trim();
 						if (data) {
 							if (data.includes('jd.com')) {
@@ -328,12 +347,18 @@
 			// 剪切板内容
 			lipboardHandler (status) {
 				let that = this;
+				 function httpString(s) {
+					var reg= /(https?|http|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
+					s = s.match(reg);
+					return(s)
+				}
 				switch (status) {
 					case 2:
-						that.jumpToPage();
+						let url = httpString(that.clipboardData)[0];
+						that.jumpToPage({jumpUrl: '../spinChain/spinChain', isLogin: true}, {searchUrl: url});
 						break;
 					case 3:
-						that.jumpToPage('../goodsSearch/goodsSearch', {searchCont: encodeURIComponent(that.clipboardData)});
+						that.jumpToPage({jumpUrl: '../goodsSearch/goodsSearch'}, {searchCont: encodeURIComponent(that.clipboardData)});
 						break;
 				}
 				that.$refs.popup.close();

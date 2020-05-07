@@ -2,10 +2,12 @@
 	"condition": {
 		"current": 0,
 		"list": [{
+			"name": "zl",
+			"path": "pages/spinChain/spinChain"
+		},{
 			"name": "gd",
 			"path": "pages/goodsDetails/goodsDetails",
 			"query": "goods_id=43694955073"
-			
 		}]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
@@ -22,6 +24,18 @@
 			"style": {
 				"navigationBarTitleText": "商品搜索",
 				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/spinChain/spinChain",
+			"style": {
+				"navigationBarTitleText": "转换链接"
+			}
+		},
+		{
+			"path": "pages/spinChain/spinChainManual/spinChainManual",
+			"style": {
+				"navigationBarTitleText": "转链工具"
 			}
 		},
 		{
@@ -50,6 +64,12 @@
 			"style": {
 				"navigationBarTitleText": "商品详情",
 				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/authLogin/authLogin",
+			"style": {
+				"navigationBarTitleText": "微信授权登录"
 			}
 		},
 		{

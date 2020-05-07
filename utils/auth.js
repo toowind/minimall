@@ -15,6 +15,8 @@
  * 
  */
 const TokenKey = 'token';
+const tempAuth = 'tempAuth';
+const userInfo = 'userInfo';
 
 export function getToken() {
 	return uni.getStorageSync(TokenKey);
@@ -28,8 +30,12 @@ export function removeToken() {
 	return uni.removeStorageSync(TokenKey);
 }
 
-export function getUserInfo() {}
+export function loginStatus() {
+	return uni.getStorageSync(userInfo) ? true: false;
+}
 
-export function setUserInfo(userInfo) {}
+export function setUserInfo(data) {
+	return uni.setStorageSync(userInfo, data);
+}
 
 export function removeUserInfo() {}

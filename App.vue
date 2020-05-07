@@ -10,7 +10,16 @@
 		methods: {
 			init () {
 				let that = this;
-				that.login();
+				uni.checkSession({
+					success: (res) => {
+						//session_key 未过期，并且在本生命周期一直有效
+					},
+					fail: (e) => {
+						// session_key 已经失效，需要重新执行登录流程
+						console.log(e)
+						that.login();
+					}
+				});
 				that.getSystemInfo();
 			},
 			login () {
@@ -21,7 +30,6 @@
 						  let that = this,
 							  {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
 							if (status === that.$resCode.successCode) {
-								let tempAuth = data;
 								setToken(data.token);
 								uni.setStorageSync('tempAuth', JSON.stringify(data));
 							}
