@@ -30,7 +30,11 @@ minRequest.setConfig(async (config) => {
 
 export default {
   // 这里统一管理api请求
-  Qapis: {},
+  Qapis: {
+    _getUserData: params => minRequest.post("/?s=Jd/User/getUserData",params),
+    _getOrderData: params => minRequest.post("/?s=Jd/Order/getOrderData",params),
+    _withdraw: params=> minRequest.post("/?s=Jd/User/withdraw",params)
+  },
   Kapis: {
 	_wechatStart: (data) => minRequest.get('/?s=Jd/User/wechatStart', {data: JSON.stringify({...data})}), // 静默登录
   	_getHomeList: (data) => minRequest.get('/?s=Jd/Product/getHomeList', {data: JSON.stringify({...data})}), // 首页导航数据

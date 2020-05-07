@@ -9,10 +9,10 @@
 		</view>
 		<view class="uni-dialog-button-group">
 			<view class="uni-dialog-button" @click="close">
-				<text class="uni-dialog-button-text">取消</text>
+				<text class="uni-dialog-button-text">{{cancelText}}</text>
 			</view>
 			<view class="uni-dialog-button uni-border-left" @click="onOk">
-				<text class="uni-dialog-button-text uni-button-color">确定</text>
+				<text class="uni-dialog-button-text uni-button-color" :style="{color: confirmColor}">{{confirmText}}</text>
 			</view>
 		</view>
 
@@ -70,7 +70,7 @@
 			 */
 			title: {
 				type: String,
-				default: '提示'
+				default: ''
 			},
 			/**
 			 * 对话框内容
@@ -85,7 +85,19 @@
 			beforeClose: {
 				type: Boolean,
 				default: false
-			}
+			},
+      cancelText: {
+        type: String,
+        default: '取消'
+      },
+      confirmText: {
+        type: String,
+        default: '确定'
+      },
+      confirmColor: {
+        type: String,
+        default: ''
+      }
 		},
 		data() {
 			return {
@@ -180,8 +192,10 @@
 	}
 
 	.uni-dialog-content-text {
-		font-size: 14px;
-		color: #6e6e6e;
+		font-size: 32upx;
+		color: #333;
+    font-family: PingFangSC-Medium, PingFang SC;
+    padding: 37upx 0;
 	}
 
 	.uni-dialog-button-group {
@@ -213,7 +227,7 @@
 	}
 
 	.uni-dialog-button-text {
-		font-size: 14px;
+		font-size: 30upx;
 	}
 
 	.uni-button-color {

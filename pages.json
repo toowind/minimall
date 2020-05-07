@@ -1,12 +1,13 @@
 {
 	"condition": {
 		"current": 0,
-		"list": [{
-			"name": "gd",
-			"path": "pages/goodsDetails/goodsDetails",
-			"query": "goods_id=43694955073"
-			
-		}]
+		"list": [
+      {
+      "name": "收益",
+      "path": "pages/profit/index",
+      "query": ""
+      }
+    ]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
@@ -57,7 +58,13 @@
 			"style": {
 				"navigationBarTitleText": "收益"
 			}
-		}
+		},
+    {
+    	"path": "pages/profit/certifyUser",
+    	"style": {
+    		"navigationBarTitleText": "验证"
+    	}
+    }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
