@@ -262,7 +262,7 @@
         last_month_total_income: 0, // 上月预估收入
         month_total_income: 0, // 本月预估收入
         orderParams: {
-          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '',
+          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
           start_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}'),
           end_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}')
         },
@@ -295,9 +295,13 @@
             if (status === 0) {
               this.t_money = data.money;
               this.is_bind_card = data.userInfo.is_bind_card;
-              if (uni.getStorageSync('is_bind_card') == undefined) {
-                uni.setStorageSync('is_bind_card', data.userInfo.is_bind_card)
-              }
+              uni.getStorage({
+                key: 'is_bind_card',
+                success: () => {},
+                fail:() => {
+                  uni.setStorage('is_bind_card', data.userInfo.is_bind_card)
+                }
+              })
               uni.setStorageSync('userInfo', data.userInfo)
               this.getOrderData();
             }
@@ -306,7 +310,7 @@
       },
       // 获取订单数据
       getOrderData() {
-        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : ''
+        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
         this.$Qapi._getOrderData({
           data: JSON.stringify({ ...this.orderParams
           })
@@ -414,7 +418,7 @@
         }
       },
       goOrderPage(type) {
-        // type 1为分享分销数据、2为领劵自购返利
+        // type 2为分享分销数据、1为领劵自购返利
         // day 1为今天 -1为昨天 7为近7天 30为近30天
         let that = this,
           day = this.mappingDayParam[this.tabsActive],
@@ -442,13 +446,8 @@
         } else {
           dateStr = '99'
         }
-        this.$router.push({
-          path: '/order/index',
-          query: {
-            type,
-            day,
-            dateStr
-          }
+        uni.navigateTo({
+          url: `/pages/profit/orderIndex?type=${type}&day=${day}&dateStr=${dateStr}`
         })
       },
       tips(e) {
