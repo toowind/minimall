@@ -26,6 +26,18 @@
 			}
 		},
 		{
+			"path": "pages/spinChain/spinChain",
+			"style": {
+				"navigationBarTitleText": "转换链接"
+			}
+		},
+		{
+			"path": "pages/spinChain/spinChainManual/spinChainManual",
+			"style": {
+				"navigationBarTitleText": "转链工具"
+			}
+		},
+		{
 			"path": "pages/activity/freeShippingProd/freeShippingProd",
 			"style": {
 				"navigationBarTitleText": "9.9专区",
@@ -51,6 +63,12 @@
 			"style": {
 				"navigationBarTitleText": "商品详情",
 				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/authLogin/authLogin",
+			"style": {
+				"navigationBarTitleText": "微信授权登录"
 			}
 		},
 		{
