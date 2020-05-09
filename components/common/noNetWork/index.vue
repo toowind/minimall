@@ -19,6 +19,10 @@
 		top: 0;
 		background: #FFFFFF;
 		border-radius:20px 20px 0px 0px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		image {
 			width: 336rpx;
 			height: 270rpx;
@@ -30,12 +34,19 @@
 			font-weight:400;
 			color:#666666;
 			line-height:32rpx;
+			margin-top: 66rpx;
+			margin-bottom: 44rpx;
 		}
 		.refresh {
 			width:226rpx;
 			height:80rpx;
+			line-height: 80rpx;
 			background:linear-gradient(270deg,rgba(234,89,69,1) 0%,rgba(255,144,101,1) 100%);
 			border-radius:40px;
+			font-size:32rpx;
+			font-family:PingFangSC-Regular,PingFang SC;
+			font-weight:400;
+			color:rgba(255,255,255,1);
 		}
 	}
 </style>

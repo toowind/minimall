@@ -1,6 +1,6 @@
 <template>
 	<view class="fx-idx-container">
-		<template v-if="false">
+		<template v-if="isNetWork">
 			<view class="idx-fixed-wrap">
 				<view class="idx-bar-wrap">
 					<view class="navigation-bar-wrap" :style="{'margin-top': statusBar + 'px', 'height': customBar-statusBar + 'px'}">
@@ -97,13 +97,14 @@
 			</uni-popup>
 		</template>
 		<template v-else>
-			
+			<noNetWork />
 		</template>
 	</view>
 </template>
 
 <script>
 	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import noNetWork from '@/components/common/noNetWork/index.vue'
 	import GoodsList from '@/components/goodsList/goodsList.vue'
 	import {loginStatus} from '@/utils/auth.js'
 	export default {
@@ -156,7 +157,8 @@
 				],
 				clipboardData: null, // 剪切板数据
 				linkType: null, // 1. 京东商品 2.其他商品
-				scrollTop: 0
+				scrollTop: 0,
+				isNetWork: false
 			}
 		},
 		onLoad() {
@@ -199,11 +201,13 @@
 				let that = this;
 				let isNetWork = await that.isHasNetwork();
 				if (isNetWork) {
+					that.isNetWork = true;
 					that.getHomeList();
 					that.getGoodsList();
 					that.getActivityList();
 				} else {
 					// 没有网络
+					that.isNetWork = false;
 				}
 				
 			},
@@ -370,6 +374,7 @@
 		components: {
 			GoodsList,
 			uniPopup,
+			noNetWork
 		}
 	}
 </script>
