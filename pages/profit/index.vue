@@ -209,7 +209,7 @@
   </view>
 </template>
 <script>
-  import { getToken } from '../../utils/auth.js'
+  import { getToken, loginStatus, setUserInfo } from '@/utils/auth.js'	
   import uniPopup from '@/components/uni-popup/uni-popup.vue'
   import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
   // import {_getUserData, _getOrderData, _withdraw} from '@/api/module/user.js'
@@ -289,7 +289,13 @@
     },
     components: {uniPopup, uniPopupDialog},
     onShow() {
-      // zq.saCommSendData('myMyAccou', {});
+		let ls = loginStatus();
+		if (!ls) {
+			uni.navigateTo({
+				url: '/pages/authLogin/authLogin'
+			});
+			return false
+		};
       this.getUserData();
       this.$refs.kfShowPopup.open()
     },
@@ -315,7 +321,7 @@
                   uni.setStorage('is_bind_card', data.userInfo.is_bind_card)
                 }
               })
-              uni.setStorageSync('userInfo', data.userInfo)
+			  setUserInfo(data.userInfo)
               this.getOrderData();
             }
           });
