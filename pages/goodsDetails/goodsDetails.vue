@@ -60,7 +60,7 @@
 		<view class="gs-copyOrder-wrap" @tap="copyOrderCont">
 			<view class="title">推荐文案, 点击复制</view>
 			<view class="name">[京东]{{ productData.goods_name }}</view>
-			<view class="line">-----------------</view>
+			<view class="line">----------------------------------</view>
 			<view class="context">
 				<view>🔥爆款冲量🔥</view>
 				<view style="margin: 10rpx 0px;">❗原价:¥{{ productData.min_group_price }}</view>
@@ -72,8 +72,10 @@
 			<view class="d-title">商品详情</view>
 			<view class="d-cont">
 				<view class="d-item" v-for="(image, key) in productData.goods_gallery_urls.imageList" :key="image.url">
-					<image :src="image.url" mode="widthFix"></image>
 					<easy-loadimage mode="widthFix"
+									class="img"
+									loading-mode="skeleton-1"
+									:open-transition="false"
 					                :scroll-top="scrollTop"
 					                :image-src="image.url"></easy-loadimage>
 				</view>
@@ -85,14 +87,14 @@
 				<text>首页</text>
 			</view>
 			<view class="handler-btn">
-				<view class="buy-self">
-					<text>自己买</text>
-					<text>省{{ allCash }}元</text>
-				</view>
-				<view class="buy-share">
+				<navigator class="buy-self" @tap="jumpOtherApp()">
+						<text>自己买</text>
+						<text>省{{ allCash }}元</text>
+				</navigator>
+				<navigator class="buy-share" target="miniProgram" app-id="wx91d27dbf599dff74">
 					<text>分享让好友购买</text>
 					<text>赚{{ return_cash }}元</text>
-				</view>
+				</navigator>
 			</view>
 		</view>
 	</view>
@@ -153,7 +155,7 @@
 			// 复制订单内容
 			copyOrderCont () {
 				let that = this,
-				data = `[京东]${that.productData.goods_name}\n--------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
+				data = `[京东]${that.productData.goods_name}\n----------------------------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
 				uni.setClipboardData({
 					data,
 					success: () => {
@@ -190,6 +192,22 @@
 				} catch (e) {
 					console.log(e, 'error -> _getProductShareUrl');
 				}
+			},
+			// 跳转其他app
+			jumpOtherApp () {
+				wx.navigateToMiniProgram({
+					appId: "wx91d27dbf599dff74",
+					path: `pages/union/proxy/proxy?spreadUrl=${this.productShareUrl.purchaseUrl}&EA_PTAG=17078.27.118`,
+					extraData: {
+						open: "auth"
+					},
+					success(res) {
+						console.log(res);
+					},
+					fail(e) {
+						console.log(e)
+					}
+				});
 			}
 		},
 		components: {

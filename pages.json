@@ -59,6 +59,12 @@
 			}
 		},
 		{
+			"path": "pages/activity/index/index",
+			"style": {
+				"navigationBarTitleText": "活动"
+			}
+		},
+		{
 			"path": "pages/goodsDetails/goodsDetails",
 			"style": {
 				"navigationBarTitleText": "商品详情",

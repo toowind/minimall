@@ -68,10 +68,12 @@ select {
 
 button,
 input[type="submit"] {
+	margin: 0;
+	line-height: 1;
+	padding: 0;
 	border: 0;
 	outline: none;
 	background: none;
-	line-height: 0;
 	border: none;
 	background: none;
 	appearance: none;
