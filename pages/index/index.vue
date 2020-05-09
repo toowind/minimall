@@ -24,31 +24,22 @@
 			<view class="nav-banner-wrap">
 				<image class="nav-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
 				<swiper 
-				class="swiper" 
-				:indicator-dots="true" 
-				:autoplay="false" 
-				:interval="2000" 
-				:duration="500">
-					<swiper-item>
-						<view class="swiper-item">
-							<image src="https://dss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2534506313,1688529724&fm=26&gp=0.jpg" mode=""></image>
-						</view>
-					</swiper-item>
-					<swiper-item>
-						<view class="swiper-item">
-							<image src="https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3252521864,872614242&fm=26&gp=0.jpg" mode=""></image>
-						</view>
-					</swiper-item>
-					<swiper-item>
-						<view class="swiper-item">
-							<image src="https://dss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3675415932,4054970339&fm=26&gp=0.jpg" mode=""></image>
-						</view>
+					class="swiper" 
+					:indicator-dots="true" 
+					:autoplay="false" 
+					:duration="500">
+					<swiper-item v-for="(item, key) in activityList" :key="key">
+						<navigator class="swiper-nav" hover-class="none" :url="`/pages/activity/index/index?data=${JSON.stringify(item)}`">
+							<view class="swiper-item">
+								<image :src="item.imgUrl" mode="aspectFill"></image>
+							</view>
+						</navigator>
 					</swiper-item>
 				</swiper>
 			</view>
 			<view class="nav-list">
 				<view class="nav-item" 
-					  @tap="jumpToPage(nav)"
+					  @tap="onNavTapHandler(nav)"
 					  v-for="(nav, index) in navListArr" 
 					  :key="nav.imgUrl">
 					<!-- #ifdef MP -->
@@ -65,7 +56,7 @@
 			  :style="{'margin-top': menuIsFixed ? 100 + 'rpx' : ''}">
 			<scroll-view 
 			id="menu_wrap"
-			:style="{'padding-top': menuIsFixed ? 305 + 'rpx' : ''}"
+			:style="{'padding-top': menuIsFixed ? 300 + 'rpx' : ''}"
 			scroll-x 
 			:class="[{'menu-fix-top': menuIsFixed}]"
 			scroll-with-animation 
@@ -82,11 +73,10 @@
 					</view>
 				</view>
 			</scroll-view>
-			<!-- <button @getuserinfo="getUserInfo" type="default" style="width: 100%;height: 50px;" open-type="getUserInfo">2222</button> -->
 			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
 			<GoodsList 
-				:scrollTop="scrollTop"
 				:goodsList="goodsList"
+				:scrollTop="scrollTop"
 				@tapGoodsItemHandler="tapGoodsItemHandler"/>
 		</view>
 		<uni-popup ref="popup" type="center">
@@ -122,6 +112,7 @@
 				menuIsFixed: false, // 菜单是否固定
 				menuList: [], // 菜单列表数据
 				goodsList: [], // 商品列表数据
+				activityList: [], // 活动列表数据
 				goodsNoMore: false, // 是否还有更多数据,若还有更多数据，则传入false, 否则传入true.
 				goodsListParams: { // 商品列表参数
 					opt_id:"0_22",
@@ -132,28 +123,28 @@
 					{ 
 						text: '转换链接', 
 						imgUrl: require('@/static/images/index/home_one_icon@2x.png'), 
-						jumpUrl: '../spinChain/spinChain' ,
+						jumpUrl: '/pages/spinChain/spinChain' ,
 						id: 1,
 						isLogin: true
 					},
 					{ 
 						text: '9.9包邮', 
 						imgUrl: require('@/static/images/index/home_two_icon@2x.png'), 
-						jumpUrl: '../activity/freeShippingProd/freeShippingProd',
+						jumpUrl: '/pages/activity/freeShippingProd/freeShippingProd',
 						id: 2,
 						isLogin: false
 					},
 					{ 
 						text: '每日优选', 
 						imgUrl: require('@/static/images/index/home_three_icon@2x.png'), 
-						jumpUrl: '../activity/optimizationProd/optimizationProd' ,
+						jumpUrl: '/pages/activity/optimizationProd/optimizationProd' ,
 						id: 3,
 						isLogin: false
 					},
 					{ 
 						text: '优惠券', 
 						imgUrl: require('@/static/images/index/home_four_icon@2x.png'), 
-						jumpUrl: '../activity/coupon/coupon',
+						jumpUrl: '/pages/activity/coupon/coupon',
 						id: 4,
 						isLogin: false
 					}
@@ -161,14 +152,6 @@
 				clipboardData: null, // 剪切板数据
 				linkType: null, // 1. 京东商品 2.其他商品
 				scrollTop: 0
-			}
-		},
-		watch: {
-			goodsListParams: {
-				handler (newV, oldV) {
-					this.getGoodsList();
-				},
-				deep: true
 			}
 		},
 		onLoad() {
@@ -179,7 +162,6 @@
 			that.readyInit();
 		},
 		onShow() {
-			console.log('onshow')
 			let that = this;
 			that.getClipboardData();
 		},
@@ -205,12 +187,14 @@
 				return false;
 			}
 			goodsListParams.page ++;
+			this.getGoodsList();
 		},
 		methods: {
 			init () {
 				let that = this;
 				that.getHomeList();
 				that.getGoodsList();
+				that.getActivityList();
 			},
 			readyInit () {
 				let that = this;
@@ -229,6 +213,7 @@
 					page: 1,
 					opt_id
 				});
+				this.getGoodsList();
 				uni.pageScrollTo({
 					scrollTop: that.menuScrollTop,
 					duration: 300
@@ -236,37 +221,11 @@
 			},
 			// 触碰搜索输入框
 			tapSearchHandler () {
-				uni.navigateTo({url: '../goodsSearch/goodsSearch'});
+				this.$methods.jumpToPage({jumpUrl: '/pages/goodsSearch/goodsSearch'});
 			},
 			// 点击商品项回调
 			tapGoodsItemHandler (goods_id) {
-				this.jumpToPage({jumpUrl: '../goodsDetails/goodsDetails'}, {goods_id});
-			},
-			// 导航跳转到指定页面
-			jumpToPage ({jumpUrl, isLogin}, params) {
-				console.log('ok')
-				let queryStr = '?',
-					url = jumpUrl;
-				if (isLogin) {
-					let ls = loginStatus();
-					if (!ls) {
-						uni.navigateTo({
-							url: '../authLogin/authLogin'
-						});
-						return false
-					};
-				}
-				if (params && Object.keys(params).length > 0) {
-					for (let key in params) {
-						queryStr += key + '=' + params[key] + '&';
-					}
-					if (queryStr.endsWith('&')) {
-						queryStr = queryStr.substring(0, queryStr.length-1);
-					}
-				}
-				uni.navigateTo({
-					url: url + queryStr
-				});
+				this.$methods.jumpToPage({jumpUrl: '/pages/goodsDetails/goodsDetails'}, {goods_id});
 			},
 			// 获取首页菜单列表
 			async getHomeList () {
@@ -315,11 +274,24 @@
 					console.log(e, 'error -> _getGoodsList');
 				}
 			},
+			// 获取首页活动列表
+			async getActivityList () {
+				try {
+					let that = this,
+						{status, data} = await that.$Kapi._getActivityList({});
+					if (status === that.$resCode.successCode) {
+						data.splice(data.findIndex(item => item.title.endsWith("首次购买奖励10元现金")), 1);
+						that.activityList = data;
+					}
+				} catch (e) {
+					console.log(e, 'error -> _getActivityList');
+				}
+			},
 			// 获取菜单具体顶部的高度
 			getMenuWrapToTopHeight () {
 				let that = this,
 					query = uni.createSelectorQuery().in(that),
-				 	idxFixedWrapHeight = 153; // 顶部固定元素的高度
+				 	idxFixedWrapHeight = 150; // 顶部固定元素的高度
 				 query.select('#menu_wrap').boundingClientRect(data => {
 				 	// data.top为#menu_wrap距离顶部的高度，减去顶部固定元素的高度。
 				 	that.menuScrollTop = data.top - idxFixedWrapHeight;
@@ -330,7 +302,6 @@
 				let that = this;
 				uni.getClipboardData({
 				    success: function (res) {
-						console.log(res);
 						let data = String(res.data).trim();
 						if (data) {
 							if (data.includes('jd.com')) {
@@ -355,13 +326,17 @@
 				switch (status) {
 					case 2:
 						let url = httpString(that.clipboardData)[0];
-						that.jumpToPage({jumpUrl: '../spinChain/spinChain', isLogin: true}, {searchUrl: url});
+						this.$methods.jumpToPage({jumpUrl: '/pages/spinChain/spinChain', isLogin: true}, {searchUrl: url});
 						break;
 					case 3:
-						that.jumpToPage({jumpUrl: '../goodsSearch/goodsSearch'}, {searchCont: encodeURIComponent(that.clipboardData)});
+						this.$methods.jumpToPage({jumpUrl: '/pages/goodsSearch/goodsSearch'}, {searchCont: encodeURIComponent(that.clipboardData)});
 						break;
 				}
 				that.$refs.popup.close();
+			},
+			// 导航栏点击跳转页面
+			onNavTapHandler (nav) {
+				this.$methods.jumpToPage(nav);
 			}
 		},
 		components: {
@@ -379,8 +354,11 @@
 		height: 307rpx;
 		z-index: 999;
 		width: 101%;
-		top: -3px;
 		position: fixed;
+		/*--下面这里没什么好奇的，兼容。 删掉有问题--*/
+		margin-top: 30px;
+		top: -30px;
+		/*--下面这里没什么好奇的，兼容。 删掉有问题--*/
 		.idx-bar-wrap {
 			width: 100%;
 			position: absolute;
@@ -409,7 +387,7 @@
 				height: 100%;
 				position: absolute;
 				left: -3px;
-				top: 0px;
+				top: -3px;
 			}
 			.t-search-wrap {
 				padding: 0 25rpx;
@@ -447,7 +425,7 @@
 		}
 	}
 	.idx-nav-wrap {
-		height: 686rpx;
+		height: 790rpx;
 		position: relative;
 		padding-top: 375rpx;
 		background-color: #ffffff;
@@ -467,10 +445,13 @@
 				top: -510rpx;
 			}
 			.swiper {
-				height:186rpx;
+				height:290rpx;
 				border-radius:20px;
 				swiper {
 					border-radius:20px;
+				}
+				.swiper-nav {
+					height: 100%;	
 				}
 				.swiper-item {
 					height: 100%;
@@ -479,8 +460,9 @@
 						border-radius:20px;	
 					}
 					image {
-						width: 100%;
-						height: 100%;
+						object-fit: fill;
+						max-height: 100%;
+						max-width: 100%;
 						background:#D8D8D8;
 						border-radius:20px;
 					}
@@ -488,7 +470,7 @@
 			}
 		}
 		.nav-list {
-			margin-top: 142rpx;
+			margin-top: 246rpx;
 			display: flex;
 			flex-direction: row;
 		}
@@ -566,6 +548,7 @@
 			text-align: center;
 		}
 		.l-cont {
+			word-break: break-word;
 			white-space: pre-line;
 			padding-bottom: 165rpx;
 			font-size:30rpx;
@@ -580,8 +563,18 @@
 			bottom: 0;
 			width: 100%;
 			height: 105rpx;
-			border-top: 1px solid #CCCCCC;
 			display: flex;
+			&:before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				border-top: 1px solid #CCCCCC;
+				transform: scaleY(0.5);
+				transform-origin: left top;
+			}
 			.ignore {
 				flex: 1;
 				height: 100%;
@@ -592,7 +585,18 @@
 				font-family:PingFangSC-Regular,PingFang SC;
 				font-weight:400;
 				color:#666666;
-				border-right: 1px solid #CCCCCC;
+				position: relative;
+				&:before {
+					content: "";
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					border-right: 1px solid #CCCCCC;
+					transform: scaleX(0.5);
+					transform-origin: left bottom;
+
+				}
 			}
 			.spin-chain {
 				flex: 1;

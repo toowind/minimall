@@ -3,7 +3,10 @@
 		<view class="fsp-banner-wrap">
 			<image :src="bannerImg" mode="scaleToFill"></image>
 		</view>
-		<GoodsList :goodsList="fspList"/>
+		<GoodsList 
+			:goodsList="fspList"
+			:scrollTop="scrollTop"
+			@tapGoodsItemHandler="tapGoodsItemHandler"/>
 	</view>
 </template>
 
@@ -14,6 +17,7 @@
 			return {
 				bannerImg: "https://view.youth.cn/20200409jdSell/nineTonine.png", // banner图片
 				fspList: [], // 9.9包邮数据
+				scrollTop: 0,
 				goodsNoMore: false, // 是否还有更多数据,若还有更多数据，则传入false, 否则传入true.
 				goodsListParams: { // 商品列表参数
 					opt_id:"0_200",
@@ -26,6 +30,11 @@
 		},
 		onLoad() {
 			this.init();
+		},
+		onPageScroll ({scrollTop}) {
+			let that = this;
+			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+		    that.scrollTop = scrollTop;
 		},
 		onReachBottom (e) {
 			let that = this,
@@ -76,12 +85,15 @@
 							} else {
 								that.fspList = [...that.fspList, ...data];	
 							}
-							console.log(that.fspList)
 						}
 				} catch (e) {
 					console.log(e, 'error -> _getHomeList');
 				}
-			}
+			},
+			// 点击商品项回调
+			tapGoodsItemHandler (goods_id) {
+				this.$methods.jumpToPage({jumpUrl: '/pages/goodsDetails/goodsDetails'}, {goods_id});
+			},
 		},
 		components: {
 			GoodsList

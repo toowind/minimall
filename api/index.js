@@ -36,8 +36,10 @@ export default {
 	_wechatLogin: (data) => minRequest.get('/?s=Jd/User/wechatLogin', {data: JSON.stringify({...data})}), // 授权登录 - 正式登录
   	_getHomeList: (data) => minRequest.get('/?s=Jd/Product/getHomeList', {data: JSON.stringify({...data})}), // 首页导航数据
 	_getGoodsList: (data) => minRequest.post('?s=Jd/Product/getGoodsList', {data: JSON.stringify({...data})}), // 首页商品列表数据
+	_getActivityList: (data) => minRequest.get('?s=Jd/Product/getActivityList', {data: JSON.stringify({...data})}), // 首页活动列表数据
 	_getGoodsListByKeyword: (data) => minRequest.post('?s=Jd/Product/getGoodsListByKeyword', {data: JSON.stringify({...data})}), // 搜索接口
 	_getProductInfo: (data) => minRequest.post('?s=Jd/Product/getProductInfo', {data: JSON.stringify({...data})}), // 商品详情
 	_getProductShareUrl: (data) => minRequest.post('?s=Jd/Product/getProductShareUrl', {data: JSON.stringify({...data})}), // 商品详情分享Url
+	_getConvertUrls: (data) => minRequest.post('/?s=Jd/Product/getConvertUrls', {data: JSON.stringify({...data})}), // 转链
   }
 }

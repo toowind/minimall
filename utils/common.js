@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import {BASE_API} from './env.js'
+import {loginStatus} from '@/utils/auth.js'
 
 var COMMON,
     _undefined = undefined;
@@ -51,7 +52,32 @@ export default COMMON = (function (_undefined) {
 			}
         },
         methods: {
-			
+			// 导航跳转到指定页面
+			jumpToPage ({jumpUrl, isLogin = false}, params) {
+				console.log(jumpUrl, isLogin)
+				let queryStr = '?',
+					url = jumpUrl;
+				if (isLogin) {
+					let ls = loginStatus();
+					if (!ls) {
+						uni.navigateTo({
+							url: '/pages/authLogin/authLogin'
+						});
+						return false
+					};
+				}
+				if (params && Object.keys(params).length > 0) {
+					for (let key in params) {
+						queryStr += key + '=' + params[key] + '&';
+					}
+					if (queryStr.endsWith('&')) {
+						queryStr = queryStr.substring(0, queryStr.length-1);
+					}
+				}
+				uni.navigateTo({
+					url: url + queryStr
+				});
+			},
 		},
         common: {
             // type 类型判断
@@ -1041,6 +1067,12 @@ Object.defineProperty(Vue.prototype, '$validate', {
 Object.defineProperty(Vue.prototype, '$constant', {
 	get: function () {
 		return COMMON.data.constant;
+	}
+});
+
+Object.defineProperty(Vue.prototype, '$methods', {
+	get: function () {
+		return COMMON.methods;
 	}
 });
 
