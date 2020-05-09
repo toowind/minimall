@@ -159,6 +159,11 @@
 				uni.setClipboardData({
 					data,
 					success: () => {
+						uni.showToast({
+							title: '专属链接复制成功',
+							duration: 3000,
+							icon: 'none'
+						});
 						console.log('setClipboardData->success');
 					},
 					fail: () => {
