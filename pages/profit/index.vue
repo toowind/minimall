@@ -194,6 +194,18 @@
       <text class="confirmBtn" @tap.stop="$refs.isShowPopup3.close()">我知道了</text>
     </view>
   </uni-popup>
+  <uni-popup ref="kfShowPopup" type="dialog" class="transfer-container">
+    <view class="kf_warp_box">
+      <text class="kf_title">关注公众号提现</text>
+      <image class="img" src="../../static/images/profit/kf_img.png" mode=""></image>
+      <view class="kf_content">
+        <text>进入客服会话, 发送“1”获取公众号二维码.</text>
+        <text class="kf_ps">ps: 也可点击右下角图标获取</text>
+      </view>
+      <button class="btn" open-type="contact">进入客服会话</button>
+      <image @tap="$refs.kfShowPopup.close()" class="close" src="./../../static/images/profit/close_icon.png" alt="">
+    </view>
+  </uni-popup>
   </view>
 </template>
 <script>
@@ -279,6 +291,7 @@
     onShow() {
       // zq.saCommSendData('myMyAccou', {});
       this.getUserData();
+      this.$refs.kfShowPopup.open()
     },
     onHide() {
       this.$refs.showAuth.close()
@@ -457,6 +470,10 @@
           this.$refs.isShowPopup2.open()
           // this.isShowPopup2 = !this.isShowPopup2;
         }
+      },
+      // 进入微信客服
+      goWxkf() {
+        
       }
     }
   };
@@ -824,6 +841,60 @@
         align-items: center;
         flex-direction: column;
         border-radius: 32upx;
+      }
+      .kf_warp_box {
+        width: 600rpx;
+        background-color: #fff;
+        padding-top: 62rpx;
+        padding-bottom: 50rpx;
+        border-radius:10rpx;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .kf_title {
+          text-align: center;
+          font-size:40rpx;
+          font-family:PingFangSC-Medium,PingFang SC;
+          font-weight:500;
+          color:rgba(51,51,51,1);
+        }
+        .img {
+          width: 490rpx;
+          height: 274rpx;
+          margin-top: 60rpx;
+        }
+        .kf_content {
+          display: flex;
+          flex-direction: column;
+          padding: 33rpx 73rpx 45rpx;
+          font-size:30rpx;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(51,51,51,1);
+          .kf_ps {
+            margin-top: 43rpx;
+          }
+        }
+        .btn {
+          width: 472rpx;
+          height: 90rpx;
+          background:rgba(87,189,106,1);
+          border-radius:45rpx;
+          text-align: center;
+          line-height: 90rpx;
+          font-size:30rpx;
+          font-family:PingFangSC-Regular,PingFang SC;
+          font-weight:400;
+          color:rgba(255,255,255,1);
+        }
+        .close {
+          position: absolute;
+          bottom: -76upx;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 50upx;
+          height: 50upx;
+        }
       }
       .tf-title {
         text-align: center;
