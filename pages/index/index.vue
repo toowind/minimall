@@ -1,99 +1,104 @@
 <template>
 	<view class="fx-idx-container">
-		<view class="idx-fixed-wrap">
-			<view class="idx-bar-wrap">
-				<view class="navigation-bar-wrap" :style="{'margin-top': statusBar + 'px', 'height': customBar-statusBar + 'px'}">
-					<image class="t-text" src="@/static/images/index/logo_icon@2x.png">
-				</view>
-			</view>
-			<view class="idx-top-wrap" :style="{'padding-top': customBar + 'px'}">
-				<image class="t-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
-				<view class="t-search-wrap">
-					<image src="@/static/images/index/search_icon@2x.png" class="t-search-img"></image>
-					<input 
-						@tap="tapSearchHandler"
-						type="text" 
-						:disabled="true" 
-						placeholder="复制京东商品标题" 
-						class="t-search"/>
-				</view>
-				<image src="@/static/images/index/top_bz_icon@2x.png" class="t-tip"></image>
-			</view>
-		</view>
-		<view class="idx-nav-wrap">
-			<view class="nav-banner-wrap">
-				<image class="nav-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
-				<swiper 
-					class="swiper" 
-					:indicator-dots="true" 
-					:autoplay="false" 
-					:duration="500">
-					<swiper-item v-for="(item, key) in activityList" :key="key">
-						<navigator class="swiper-nav" hover-class="none" :url="`/pages/activity/index/index?data=${JSON.stringify(item)}`">
-							<view class="swiper-item">
-								<image :src="item.imgUrl" mode="aspectFill"></image>
-							</view>
-						</navigator>
-					</swiper-item>
-				</swiper>
-			</view>
-			<view class="nav-list">
-				<view class="nav-item" 
-					  @tap="onNavTapHandler(nav)"
-					  v-for="(nav, index) in navListArr" 
-					  :key="nav.imgUrl">
-					<!-- #ifdef MP -->
-					<image :src="nav.imgUrl" mode=""></image>
-					<!-- #endif -->
-					<!-- #ifdef APP-PLUS -->
-					<image :src="'../../' + nav.imgUrl" mode=""></image>
-					<!-- #endif -->
-					<text>{{nav.text }}</text>
-				</view>
-			</view>
-		</view>
-		<view class="idx-context-wrap"
-			  :style="{'margin-top': menuIsFixed ? 100 + 'rpx' : ''}">
-			<scroll-view 
-			id="menu_wrap"
-			:style="{'padding-top': menuIsFixed ? 300 + 'rpx' : ''}"
-			scroll-x 
-			:class="[{'menu-fix-top': menuIsFixed}]"
-			scroll-with-animation 
-			:scroll-left="scrollLeft">
-				<view class="idx-menu-wrap">
-					<view
-					:class="{'active': TabCur === key}"
-					v-for="(item,key) in menuList"
-					:key="item.opt_id"
-					@tap="tabSelect"
-					:data-opt_id="item.opt_id"
-					:data-id="key">
-						{{item.opt_name}}
+		<template v-if="false">
+			<view class="idx-fixed-wrap">
+				<view class="idx-bar-wrap">
+					<view class="navigation-bar-wrap" :style="{'margin-top': statusBar + 'px', 'height': customBar-statusBar + 'px'}">
+						<image class="t-text" src="@/static/images/index/logo_icon@2x.png">
 					</view>
 				</view>
-			</scroll-view>
-			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
-			<GoodsList 
-				:goodsList="goodsList"
-				:scrollTop="scrollTop"
-				@tapGoodsItemHandler="tapGoodsItemHandler"/>
-		</view>
-		<uni-popup ref="popup" type="center">
-			<view class="idx-lipboard-wrap">
-				<view class="l-title">{{ linkType === 1 ? '识别到以下链接': '是否搜索商品' }}</view>
-				<view class="l-cont" v-html="clipboardData"></view>
-				<view class="l-handler">
-					<view class="ignore" @tap="lipboardHandler(1)">忽略</view>
-					<block v-if="linkType === 1">
-						<view class="spin-chain" @tap="lipboardHandler(2)">立即转链</view>
-					</block>
-					<block v-if="linkType === 2">
-						<view class="spin-chain" @tap="lipboardHandler(3)">立即搜索</view>
-					</block>
+				<view class="idx-top-wrap" :style="{'padding-top': customBar + 'px'}">
+					<image class="t-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
+					<view class="t-search-wrap">
+						<image src="@/static/images/index/search_icon@2x.png" class="t-search-img"></image>
+						<input 
+							@tap="tapSearchHandler"
+							type="text" 
+							:disabled="true" 
+							placeholder="复制京东商品标题" 
+							class="t-search"/>
+					</view>
+					<image src="@/static/images/index/top_bz_icon@2x.png" class="t-tip"></image>
 				</view>
 			</view>
-		</uni-popup>
+			<view class="idx-nav-wrap">
+				<view class="nav-banner-wrap">
+					<image class="nav-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
+					<swiper 
+						class="swiper" 
+						:indicator-dots="true" 
+						:autoplay="false" 
+						:duration="500">
+						<swiper-item v-for="(item, key) in activityList" :key="key">
+							<navigator class="swiper-nav" hover-class="none" :url="`/pages/activity/index/index?data=${JSON.stringify(item)}`">
+								<view class="swiper-item">
+									<image :src="item.imgUrl" mode="aspectFill"></image>
+								</view>
+							</navigator>
+						</swiper-item>
+					</swiper>
+				</view>
+				<view class="nav-list">
+					<view class="nav-item" 
+						  @tap="onNavTapHandler(nav)"
+						  v-for="(nav, index) in navListArr" 
+						  :key="nav.imgUrl">
+						<!-- #ifdef MP -->
+						<image :src="nav.imgUrl" mode=""></image>
+						<!-- #endif -->
+						<!-- #ifdef APP-PLUS -->
+						<image :src="'../../' + nav.imgUrl" mode=""></image>
+						<!-- #endif -->
+						<text>{{nav.text }}</text>
+					</view>
+				</view>
+			</view>
+			<view class="idx-context-wrap"
+				  :style="{'margin-top': menuIsFixed ? 100 + 'rpx' : ''}">
+				<scroll-view 
+				id="menu_wrap"
+				:style="{'padding-top': menuIsFixed ? 300 + 'rpx' : ''}"
+				scroll-x 
+				:class="[{'menu-fix-top': menuIsFixed}]"
+				scroll-with-animation 
+				:scroll-left="scrollLeft">
+					<view class="idx-menu-wrap">
+						<view
+						:class="{'active': TabCur === key}"
+						v-for="(item,key) in menuList"
+						:key="item.opt_id"
+						@tap="tabSelect"
+						:data-opt_id="item.opt_id"
+						:data-id="key">
+							{{item.opt_name}}
+						</view>
+					</view>
+				</scroll-view>
+				<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
+				<GoodsList 
+					:goodsList="goodsList"
+					:scrollTop="scrollTop"
+					@tapGoodsItemHandler="tapGoodsItemHandler"/>
+			</view>
+			<uni-popup ref="popup" type="center">
+				<view class="idx-lipboard-wrap">
+					<view class="l-title">{{ linkType === 1 ? '识别到以下链接': '是否搜索商品' }}</view>
+					<view class="l-cont" v-html="clipboardData"></view>
+					<view class="l-handler">
+						<view class="ignore" @tap="lipboardHandler(1)">忽略</view>
+						<block v-if="linkType === 1">
+							<view class="spin-chain" @tap="lipboardHandler(2)">立即转链</view>
+						</block>
+						<block v-if="linkType === 2">
+							<view class="spin-chain" @tap="lipboardHandler(3)">立即搜索</view>
+						</block>
+					</view>
+				</view>
+			</uni-popup>
+		</template>
+		<template v-else>
+			
+		</template>
 	</view>
 </template>
 
@@ -190,11 +195,17 @@
 			this.getGoodsList();
 		},
 		methods: {
-			init () {
+			async init () {
 				let that = this;
-				that.getHomeList();
-				that.getGoodsList();
-				that.getActivityList();
+				let isNetWork = await that.isHasNetwork();
+				if (isNetWork) {
+					that.getHomeList();
+					that.getGoodsList();
+					that.getActivityList();
+				} else {
+					// 没有网络
+				}
+				
 			},
 			readyInit () {
 				let that = this;
@@ -337,6 +348,23 @@
 			// 导航栏点击跳转页面
 			onNavTapHandler (nav) {
 				this.$methods.jumpToPage(nav);
+			},
+			// 是否有网络
+			isHasNetwork () {
+				return new Promise((resolve, reject) => {
+					uni.getNetworkType({
+						success({networkType}) {
+							if (networkType == 'none') {
+								resolve(false);
+							} else {
+								resolve(true);
+							}
+						},
+						fail() {
+							console.log('err -> isHasNetwork')
+						}
+					})
+				});
 			}
 		},
 		components: {
