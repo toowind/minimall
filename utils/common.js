@@ -1081,3 +1081,8 @@ Object.defineProperty(Vue.prototype, '$commonFn', {
 		return COMMON.common;
 	}
 });
+Object.defineProperty(Vue.prototype, '$dateFn', {
+    get() {
+        return COMMON.common.dateFn;
+    }
+});

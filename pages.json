@@ -1,14 +1,13 @@
 {
 	"condition": {
 		"current": 0,
-		"list": [{
-			"name": "活动",
-			"path": "pages/activity/index/index"
-		},{
-			"name": "gd",
-			"path": "pages/goodsDetails/goodsDetails",
-			"query": "goods_id=43694955073"
-		}]
+		"list": [
+      {
+      "name": "收益",
+      "path": "pages/profit/orderIndex",
+      "query": "type=1&dateStr=99"
+      }
+    ]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
@@ -83,7 +82,24 @@
 			"style": {
 				"navigationBarTitleText": "收益"
 			}
-		}
+		},
+    {
+    	"path": "pages/profit/certifyUser",
+    	"style": {
+    		"navigationBarTitleText": "验证"
+    	}
+    },
+    {
+    	"path": "pages/profit/orderIndex",
+    	"style": {
+    		"navigationBarTitleText": "订单",
+        "onReachBottomDistance":100,
+        "usingComponents": {
+          // "van-datetime-picker": "/wxcomponents/vant/datetime-picker/index",
+          // "van-popup": "/wxcomponents/vant/popup/index"
+        }
+    	}
+    }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
