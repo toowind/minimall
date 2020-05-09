@@ -9,6 +9,9 @@
 		onHide: function() {},
 		methods: {
 			init () {
+				// 临时token
+				let token = 'MDAwMDAwMDAwMJrcepbDu7WatZ99sXzMq8rE0s6gw2JonsWIjJuCn3_FmbeJmLCrupTKiomvgqefyq6orJ7GnXlmvImAm4Kff9GZq4LcsdDbp755bZp_lXqTu720nsWca6-wdYCpgHqLyIKnlMuvqMiivrCKo4zNgsuvrKtor5p8a7CFgaiNoJnDmJaGp7O6qpLIipyuhd2b2bC61q2vYGNmxYRom5ekg8yXzGXWxavHmrJ5fqGUqnrWxNK4qauaorCvdIGplX17ko_Qad7Et61nr6Skr3zMq8rFrNqexneNrMaeaHyNeX6YgpZgog';
+				setToken(token);
 				let that = this;
 				uni.checkSession({
 					success: (res) => {

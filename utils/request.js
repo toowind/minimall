@@ -2,6 +2,7 @@ const config = Symbol('config')
 const isCompleteURL = Symbol('isCompleteURL')
 const requestBefore = Symbol('requestBefore')
 const requestAfter = Symbol('requestAfter')
+import {getToken} from '../utils/auth.js'
 
 class MinRequest {
   [config] = {
@@ -12,7 +13,6 @@ class MinRequest {
     responseType: 'text',
 	timeout: 10000
   }
-
   interceptors = {
     request: (func) => {
       if (func) {
@@ -48,13 +48,15 @@ class MinRequest {
   }
 
   async request (options = {}) {
-    let {data, baseURL, dataType, method} = await this[config];
+    let {data, baseURL, dataType, method} = await this[config],
+		token = getToken();
     options.baseURL = options.baseURL || baseURL;
     options.dataType = options.dataType || dataType;
     options.url = MinRequest[isCompleteURL](options.url) ? options.url : (options.baseURL + options.url);
     options.header = {...options.header, ...this[config].header};
-	options.data = Object.assign(options.data ? options.data : {}, data);
     options.method = options.method || method;
+	options.data = Object.assign(options.data ? options.data : {}, data);
+	options.data.token = token;
     options = {...options, ...MinRequest[requestBefore](options)};
     return new Promise((resolve, reject) => {
       options.success = function (res) {

@@ -22,8 +22,8 @@
 					};
 					let {status, data} = await that.$Kapi._wechatLogin(params);
 					if (status === that.$resCode.successCode) {
+						setToken(data.token);
 						setUserInfo(data);
-						// setToken(data.token);
 						uni.removeStorageSync('tempAuth'); // 删除临时用户信息
 						uni.hideToast();
 						uni.showToast({

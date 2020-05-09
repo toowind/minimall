@@ -296,8 +296,8 @@
 			});
 			return false
 		};
-      this.getUserData();
-      this.$refs.kfShowPopup.open()
+		this.getUserData();
+		this.$refs.kfShowPopup.open()
     },
     onHide() {
       this.$refs.showAuth.close()

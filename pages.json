@@ -2,12 +2,12 @@
 	"condition": {
 		"current": 0,
 		"list": [
-      {
-      "name": "收益",
-      "path": "pages/profit/orderIndex",
-      "query": "type=1&dateStr=99"
-      }
-    ]
+		  {
+			  "name": "收益",
+			  "path": "pages/profit/orderIndex",
+			  "query": "type=1&dateStr=99"
+		  }
+		]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
@@ -16,6 +16,12 @@
 				"navigationBarTitleText": "首页",
 				"navigationStyle": "custom",
 				"onReachBottomDistance": 0
+			}
+		},
+		{
+			"path": "pages/noNetWork/noNetWork",
+			"style": {
+				"navigationBarTitleText": "每日折上折"
 			}
 		},
 		{
@@ -83,23 +89,19 @@
 				"navigationBarTitleText": "收益"
 			}
 		},
-    {
-    	"path": "pages/profit/certifyUser",
-    	"style": {
-    		"navigationBarTitleText": "验证"
-    	}
-    },
-    {
-    	"path": "pages/profit/orderIndex",
-    	"style": {
-    		"navigationBarTitleText": "订单",
-        "onReachBottomDistance":100,
-        "usingComponents": {
-          // "van-datetime-picker": "/wxcomponents/vant/datetime-picker/index",
-          // "van-popup": "/wxcomponents/vant/popup/index"
-        }
-    	}
-    }
+		{
+			"path": "pages/profit/certifyUser",
+			"style": {
+				"navigationBarTitleText": "验证"
+			}
+		},
+		{
+			"path": "pages/profit/orderIndex",
+			"style": {
+				"navigationBarTitleText": "订单",
+				"onReachBottomDistance":100
+			}
+		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

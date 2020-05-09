@@ -98,6 +98,9 @@ export default{
 </script>
 
 <style scoped>
+	.easy-loadimage {
+		height: 100%;
+	}
     /* 官方优化图片tips */
     image{
         will-change: transform
@@ -107,6 +110,7 @@ export default{
         width: 100%;
         height: 100%;
         opacity: 0.3;
+		border-radius: 10px;
     }
     image.origin-img.show-transition{
         transition: opacity 1.2s;
@@ -122,6 +126,7 @@ export default{
          background-size: 50%;
     }
     .loading-img{
+		border-radius: 10px;
         height: 100%;
     }
     /* 转圈 */
