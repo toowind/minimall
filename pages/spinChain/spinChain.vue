@@ -20,7 +20,7 @@
 				<text class="clear" @tap="clearLinkCont">清空</text>
 			</view>
 		</view>
-		<view class="sc-footer-wrap">
+		<view class="sc-footer-wrap" :style="{'z-index': !isKnow ? 1 + ' !important' : ''}">
 			<button class="trans" @tap="changeConvertUrl(null)">转换为我的链接</button>
 			<template v-if="Object.keys(transChainData).length">
 				<button class="share" open-type="share">
@@ -35,14 +35,14 @@
 				</button>
 			</template>
 		</view>
-		<uni-popup ref="popup" type="center">
+		<uni-popup ref="popup" type="center" :maskClick="false">
 			<view class="sc-firstTip-wrap">
 				<text class="sc-first-content">当你看到其他京东客推广的商品比较好，想由自己来推广，复制对方的链接，在【中青看点】内使用链工具转换链接，即可将商品转换为您自己的商品，此时将商品推广给您的朋友，好友下单您即可获得返现</text>
 				<view class="sc-first-footer" @tap="closePopup('popup')">我知道了</view>
 			</view>
 		</uni-popup>
 		
-		<uni-popup ref="sheetPopup" type="bottom">
+		<uni-popup ref="sheetPopup" type="bottom" :maskClick="false">
 			<view class="sc-sheet-wrap">
 				<view class="product-header">
 					<text class="h-title">识别到1个商品</text>
@@ -161,6 +161,7 @@
 				let that = this;
 				that.$refs[refName].close();
 				if (refName === "popup") {
+					that.isKnow = true;
 					if (Object.keys(that.params).length && that.params.searchUrl) {
 						let searchUrl = decodeURIComponent(decodeURIComponent(that.params.searchUrl));
 						that.changeConvertUrl(searchUrl);
