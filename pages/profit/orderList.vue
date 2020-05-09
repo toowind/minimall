@@ -1,7 +1,6 @@
 <template>
     <view class="o-c-list">
-        <view v-if="items.goods_id" v-for="items in list" :key="items.goods_id" @click="$router.push({path: '/goodsDetails',query: {id:items && items.goods_id}
-                });">
+        <view v-if="items.goods_id" v-for="items in list" :key="items.goods_id" @click="goTo(items.goods_id)">
             <view class="ls-top">
                 <view class="ls-top-img">
                     <image lazy-load :src="items.image || defaultImgUrl"/>
@@ -62,6 +61,13 @@ export default {
     },
     mounted() {
       console.log('----------->>>', this.list)
+    },
+    methods:{
+      goTo(id) {
+        uni.navigateTo({
+          url:`/pages/goodsDetails/goodsDetails?id=${id}`
+        })
+      }
     }
 }
 </script>
