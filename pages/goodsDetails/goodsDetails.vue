@@ -775,7 +775,7 @@
       <view class="context">
         <view>{{isCoupon == 1?'🔥爆款冲量🔥':'疯了疯了💢'}}</view>
         <view style="margin:.1rem 0;">{{isPg ==1 && isCoupon ==0?'拼购价':isCoupon == 1?'❗原价':'超低惊喜价'}}:¥{{ isPg ==1 && isCoupon==0?available_price:min_group_price}}</view>
-        <view style="margin:.1rem 0;" v-if="isCoupon == 1">{{`${'💰'+priceName}`}}: ¥{{available_price}}</view>
+        <view style="margin:.1rem 0;" v-if="isCoupon == 1">{{'💰'+ priceName}}: ¥{{available_price}}</view>
         <view style="margin:.1rem 0;" v-else>实惠到爆炸，不买太遗憾了👇</view>
         <view>{{isCoupon == 1?'下单链接👉': '入口👉'}}: {{productShareUrl.purchaseUrl || ''}}</view>
       </view>
@@ -818,12 +818,13 @@
         productShareUrl: {}, // 商品分享url 
         scrollTop: 0,
         isPg: 0,
-        isCoupon: 0,
+        isCoupon: null,
         coupon_discount: 0,
         P_name: '', // 商品展示名称
         P_price: 0.00, // 商品展示价格
         min_group_price: 0.00, // 商品原价
         available_price: 0.00, // 返回价格
+        priceName: '',
         imgList: {},
         userList: [
           {avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang36.jpg/120x120', nickname: '祥海祥海祥海祥海祥海'},
