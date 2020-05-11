@@ -46,10 +46,18 @@
 				<image src="@/static/images/activity/share_wx_icon@2x.png"></image>
 				<text>立即参加</text>
 			</view>
-			<button class="footer-item" open-type="share">
-				<image src="@/static/images/activity/share_zj_icon@2x.png"></image>
-				<text>转发朋友</text>
-			</button>
+			<template v-if="loginStatus">
+				<button class="footer-item" open-type="share">
+					<image src="@/static/images/activity/share_zj_icon@2x.png"></image>
+					<text>转发朋友</text>
+				</button>
+			</template>
+			<template v-else>
+				<button class="footer-item" @tap="shareFriend">
+					<image src="@/static/images/activity/share_zj_icon@2x.png"></image>
+					<text>转发朋友</text>
+				</button>
+			</template>
 		</view>
 	</view>
 </template>
@@ -57,10 +65,12 @@
 <script>
 	import uniCollapse from '@/components/uni-collapse/uni-collapse.vue'
 	import uniCollapseItem from '@/components/uni-collapse-item/uni-collapse-item.vue'
+	import {loginStatus} from '@/utils/auth.js'
 	export default {
 		data() {
 			return {
-				data: {}
+				data: {},
+				loginStatus: null
 			}
 		},
 		onLoad({data}) {
@@ -75,6 +85,9 @@
 					imageUrl: that.data.imgUrl  
 				}
 			}
+		},
+		onShow() {
+			this.loginStatus = loginStatus();
 		},
 		methods: {
 			// 复制活动文案
@@ -91,6 +104,13 @@
 			},
 			// 立即参加
 			joinNow () {
+				let ls = loginStatus();
+				if (!ls) {
+					uni.navigateTo({
+						url: '/pages/authLogin/authLogin'
+					});
+					return false
+				};
 				wx.navigateToMiniProgram({
 					appId: "wx91d27dbf599dff74",
 					path: `pages/union/proxy/proxy?spreadUrl=${this.data.activityUrl}&EA_PTAG=17078.27.118`,
@@ -107,7 +127,13 @@
 			},
 			// 转发朋友
 			shareFriend () {
-				
+				let ls = loginStatus();
+				if (!ls) {
+					uni.navigateTo({
+						url: '/pages/authLogin/authLogin'
+					});
+					return false
+				};
 			}
 			
 		},

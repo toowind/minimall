@@ -62,7 +62,10 @@
 			<view 
 				:style="{'margin-top': criteriaIsFixed ? '37px' : ''}"
 				class="search-goods-list">
-				<GoodsList :goodsList="goodsList"/>	
+				<GoodsList 
+				:goodsList="goodsList"
+				:scrollTop="scrollTop"
+				@tapGoodsItemHandler="tapGoodsItemHandler"/>	
 			</view>
 		</block>
 	</view>
@@ -87,7 +90,8 @@
 					sort_type: 0
 				},
 				criteriaScrollTop: null, // 搜索条件距顶部的距离.
-				criteriaIsFixed: false // 搜索条件是否固定在顶部.
+				criteriaIsFixed: false, // 搜索条件是否固定在顶部.
+				scrollTop: 0
 			}
 		},
 		onLoad(params) {
@@ -100,6 +104,7 @@
 		},
 		onPageScroll (e) {
 			let that = this;
+			that.scrollTop = scrollTop;
 			if (e.scrollTop > that.criteriaScrollTop) {
 				that.criteriaIsFixed = true;
 			} else {
@@ -265,8 +270,11 @@
 				} catch (e) {
 					console.log(e, 'error -> _getGoodsListByKeyword');
 				}
-				
-			}
+			},
+			// 点击商品项回调
+			tapGoodsItemHandler (goods_id) {
+				this.$methods.jumpToPage({jumpUrl: '/pages/goodsDetails/goodsDetails'}, {goods_id});
+			},
 		},
 		components: {
 			GoodsList

@@ -94,7 +94,7 @@
 			</view>
 		</view>
 		<view class="gs-bottom-wrap">
-			<view class="home-tag" @tap="jumpToPage('../index/index')">
+			<view class="home-tag" @tap="jumpToPage({jumpUrl: '../index/index'})">
 				<image src="@/static/images/goodsDetails/tab_home_icon@2x.png" mode=""></image>
 				<text>首页</text>
 			</view>
@@ -103,10 +103,18 @@
 						<text>自己买</text>
 						<text>省{{ allCash }}元</text>
 				</navigator>
-				<navigator class="buy-share" target="miniProgram" app-id="wx91d27dbf599dff74">
-					<text>分享让好友购买</text>
-					<text>赚{{ return_cash }}元</text>
-				</navigator>
+				<template v-if="loginStatus">
+					<navigator class="buy-share" open-type="share" app-id="wx91d27dbf599dff74">
+						<text>分享让好友购买</text>
+						<text>赚{{ return_cash }}元</text>
+					</navigator>
+				</template>
+				<template v-else>
+					<navigator class="buy-share" @tap="jumpToPage({jumpUrl: '../authLogin/authLogin', isLogin: true})">
+						<text>分享让好友购买</text>
+						<text>赚{{ return_cash }}元</text>
+					</navigator>
+				</template>
 			</view>
 		</view>
 	</view>
@@ -114,6 +122,7 @@
 
 <script>
 	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
+	import {loginStatus} from '@/utils/auth.js'
 	export default {
 		data () {
 			return {
@@ -121,13 +130,14 @@
 				productData: {}, // 商品详情数据
 				productShareUrl: {}, // 商品分享url 
 				scrollTop:0,
-        isPg: 0,
-        isCoupon: 0,
-        coupon_discount: 0,
-        P_name: '', // 商品展示名称
-        P_price: 0.00, // 商品展示价格
-        min_group_price: 0.00, // 商品原价
-        available_price: 0.00, // 返回价格
+				isPg: 0,
+				isCoupon: 0,
+				coupon_discount: 0,
+				P_name: '', // 商品展示名称
+				P_price: 0.00, // 商品展示价格
+				min_group_price: 0.00, // 商品原价
+				available_price: 0.00, // 返回价格
+				loginStatus: null
 			}
 		},
 		onPageScroll({scrollTop}) {
@@ -137,6 +147,7 @@
 		onLoad(e) {
 			let that = this;
 			that.queryParams = e;
+			that.loginStatus = loginStatus();
 			that.init();
 		},
 		computed: {
@@ -146,7 +157,7 @@
 			  return num.toFixed(2);
 			},
 			return_cash () {
-        // 返利价
+				// 返利价
 				let that = this;
 				return Object.keys(that.productData).length && Number(that.productData.return_cash).toFixed(2);
 			}
@@ -158,49 +169,35 @@
 				that.getProductShareUrl();
 			},
 			// 导航跳转到指定页面
-			jumpToPage (url, params) {
-				let queryStr = '?';
-				if (params && Object.keys(params).length > 0) {
-					for (let key in params) {
-						queryStr += key + '=' + params[key] + '&';
-					}
-					if (queryStr.endsWith('&')) {
-						queryStr = queryStr.substring(0, queryStr.length-1);
-					}
-				}
-				uni.switchTab({
-					url: url + queryStr
-				});
+			jumpToPage ({jumpUrl, isLogin=false}, params) {
+				this.$methods.jumpToPage({jumpUrl: url, isLogin: true});
 			},
-      fix_PN_PR() {
-        if (this.isPg == 1 && this.isCoupon == 1) {
-          this.P_name = '拼购券后价'
-          this.P_price = this.formaters(this.available_price)
-        } else if (this.isPg ==1 && this.isCoupon ==0) {
-          this.P_name = '拼购价'
-          this.P_price = this.formaters(this.available_price)
-        } else if (this.isPg ==0 && this.isCoupon ==1) {
-          this.P_name = '券后价'
-          this.P_price = this.formaters(this.available_price)
-        } else if (this.isPg ==0 && this.isCoupon==0) {
-          this.P_name = '返利价'
-          this.P_price = this.formaters(this.available_price)
-          const n = (Number(this.min_group_price)-this.return_cash).toFixed(2)
-          this.P_price = this.formaters(n)
-        }
-      },
-      
+			fix_PN_PR() {
+				if (this.isPg == 1 && this.isCoupon == 1) {
+				  this.P_name = '拼购券后价'
+				  this.P_price = this.formaters(this.available_price)
+				} else if (this.isPg ==1 && this.isCoupon ==0) {
+				  this.P_name = '拼购价'
+				  this.P_price = this.formaters(this.available_price)
+				} else if (this.isPg ==0 && this.isCoupon ==1) {
+				  this.P_name = '券后价'
+				  this.P_price = this.formaters(this.available_price)
+				} else if (this.isPg ==0 && this.isCoupon==0) {
+				  this.P_name = '返利价'
+				  this.P_price = this.formaters(this.available_price)
+				  const n = (Number(this.min_group_price)-this.return_cash).toFixed(2)
+				  this.P_price = this.formaters(n)
+				}
+			},
 			// 复制订单内容
 			copyOrderCont () {
 				let that = this,
-        data = ''
-        if (this.isCoupon) {
-          data = `[京东]${that.productData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.min_group_price}\n💰${that.P_name}: ¥${that.available_price}，快抢快抢\n下单链接👉: ${that.productShareUrl.purchaseUrl}`;
-        } else {
-          data = `[京东]${that.productData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.isPg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.available_price:that.min_group_price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.productShareUrl.purchaseUrl}`;
-        }
-        
-        
+				data = ''
+				if (this.isCoupon) {
+				  data = `[京东]${that.productData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.min_group_price}\n💰${that.P_name}: ¥${that.available_price}，快抢快抢\n下单链接👉: ${that.productShareUrl.purchaseUrl}`;
+				} else {
+				  data = `[京东]${that.productData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.isPg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.available_price:that.min_group_price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.productShareUrl.purchaseUrl}`;
+				}
 				// data = `[京东]${that.productData.goods_name}\n----------------------------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
 				uni.setClipboardData({
 					data,
@@ -226,13 +223,13 @@
 					if (status === that.$resCode.successCode) {
 						that.productData = data;
 						that.productData.return_cash = (Number(data.return_cash)*Number(data.user_percent || 0.5)).toFixed(2);
-            this.isPg = data.isPg // 是否拼购
-            this.isCoupon = data.isCoupon // 是否有优惠券
-            this.coupon_discount = data.coupon_discount // 优惠券金额
-            this.min_group_price = data.min_group_price
-            this.available_price = Number(data.discountPrice)
-            this.priceName = data.priceName
-            this.fix_PN_PR()
+						this.isPg = data.isPg // 是否拼购
+						this.isCoupon = data.isCoupon // 是否有优惠券
+						this.coupon_discount = data.coupon_discount // 优惠券金额
+						this.min_group_price = data.min_group_price
+						this.available_price = Number(data.discountPrice)
+						this.priceName = data.priceName
+						this.fix_PN_PR()
 					}
 				} catch (e) {
 					console.log(e, 'error -> _getProductInfo');
@@ -245,7 +242,6 @@
 						{status, data} = await that.$Kapi._getProductShareUrl(queryParams);
 					if (status === that.$resCode.successCode) {
 						that.productShareUrl = data;
-						console.log(data);
 					}
 				} catch (e) {
 					console.log(e, 'error -> _getProductShareUrl');
@@ -253,6 +249,13 @@
 			},
 			// 跳转其他app
 			jumpOtherApp () {
+				let ls = loginStatus();
+				if (!ls) {
+					uni.navigateTo({
+						url: '/pages/authLogin/authLogin'
+					});
+					return false
+				};
 				wx.navigateToMiniProgram({
 					appId: "wx91d27dbf599dff74",
 					path: `pages/union/proxy/proxy?spreadUrl=${this.productShareUrl.purchaseUrl}&EA_PTAG=17078.27.118`,
@@ -267,29 +270,29 @@
 					}
 				});
 			},
-      // 格式化金额
-      formaters(value) {
-        if (!value || Number(value) == 0) return ''
-        value = value.toString()
-        let end = ''
-        if (value.indexOf('.') > -1) {
-          let s = value.split('.')[0]
-          let s1 = value.split('.')[1] && value.split('.')[1].toString()
-          // 01
-          if (s1[0] == 0 && s1[1] == 0) {
-            end = s
-          } else if (s1[0] == 0 && s1[1] != 0) {
-            end = s +'.'+ s1
-          } else if (s1[0] != 0 && s1[1] == 0) {
-            end = s +'.'+ s1[0]
-          } else if (s1[0] != 0 && s1[1] != 0) {
-            end = s +'.'+ s1
-          }
-        } else {
-          end = value
-        }
-        return end
-      },
+			// 格式化金额
+			formaters(value) {
+			if (!value || Number(value) == 0) return ''
+				value = value.toString()
+				let end = ''
+				if (value.indexOf('.') > -1) {
+				  let s = value.split('.')[0]
+				  let s1 = value.split('.')[1] && value.split('.')[1].toString()
+				  // 01
+				  if (s1[0] == 0 && s1[1] == 0) {
+					end = s
+				  } else if (s1[0] == 0 && s1[1] != 0) {
+					end = s +'.'+ s1
+				  } else if (s1[0] != 0 && s1[1] == 0) {
+					end = s +'.'+ s1[0]
+				  } else if (s1[0] != 0 && s1[1] != 0) {
+					end = s +'.'+ s1
+				  }
+				} else {
+				  end = value
+				}
+				return end
+			},
 		},
 		components: {
 			easyLoadimage
