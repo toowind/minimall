@@ -2,7 +2,8 @@
 	<view class="fx-manual-container">
 		<view class="mu-tip-wrap">当你看到其他人推广的比较好的京东商品时，如果想转成自己专属的京口令分享给好友，如何操作呢？</view>
 		<view class="mu-cont-wrap">
-			<image src="@/static/images/spinChain/bz_img@2x.png">
+			<image src="http://view.youth.cn/20200428butionMall/imgs/bz_img_01.png">
+			<image src="http://view.youth.cn/20200428butionMall/imgs/bz_img_02.png">
 		</view>
 		<view class="mu-footer-wrap">
 			<text>一句话总结：</text>
@@ -31,9 +32,16 @@
 		}
 		.mu-cont-wrap {
 			padding: 45rpx 48rpx 65rpx 68rpx;
-			> image {
+			image {
+				display: block;
+			}
+			image:first-child {
 				width: 634rpx;
-				height: 1569rpx;
+				height: 785rpx;
+			}
+			image:last-child {
+				width: 634rpx;
+				height: 784rpx;
 			}
 		}
 		.mu-footer-wrap {
