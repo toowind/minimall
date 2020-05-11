@@ -94,7 +94,7 @@
 			</view>
 		</view>
 		<view class="gs-bottom-wrap">
-			<view class="home-tag" @tap="jumpToPage({jumpUrl: '../index/index'})">
+			<view class="home-tag" @tap="jumpToPage({jumpUrl: '../index/index', switchTab: true})">
 				<image src="@/static/images/goodsDetails/tab_home_icon@2x.png" mode=""></image>
 				<text>首页</text>
 			</view>
@@ -169,8 +169,8 @@
 				that.getProductShareUrl();
 			},
 			// 导航跳转到指定页面
-			jumpToPage ({jumpUrl, isLogin=false}, params) {
-				this.$methods.jumpToPage({jumpUrl, isLogin: true});
+			jumpToPage ({jumpUrl, isLogin=false, switchTab=false}, params) {
+				this.$methods.jumpToPage({jumpUrl, isLogin, switchTab});
 			},
 			fix_PN_PR() {
 				if (this.isPg == 1 && this.isCoupon == 1) {

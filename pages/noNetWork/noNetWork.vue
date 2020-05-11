@@ -8,6 +8,14 @@
 
 <script>
 	export default {
+		onLoad() {
+			uni.hideToast();
+			uni.showToast({
+				title: '网络连接失败，请稍后重试！',
+				duration: 2000,
+				icon: 'none'
+			});
+		},
 		methods: {
 			refresh () {
 				uni.navigateBack();
@@ -28,7 +36,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding-top: 365rpx;
+		justify-content: center;
 		image {
 			width: 336rpx;
 			height: 270rpx;
