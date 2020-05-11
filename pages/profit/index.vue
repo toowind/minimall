@@ -143,16 +143,6 @@
       </view>
     </view>
   </view>
-
-  <!-- <uni-popup ref="showAuth" class="auth-container transfer-container">
-   <view class="warp_box">
-      <text class="auth-title tf-title">为保障账户安全, 请完成实名认证</text>
-      <view style="display: flex;width: 100%;">
-        <text class="confirmBtn" style="flex: 1;" @tap.stop="$refs.showAuth.close()">取消</text>
-        <text class="confirmBtn" style="flex: 1;" @tap.stop="authFn">去认证</text>
-      </view>
-    </view>
-  </uni-popup> -->
   <!-- <uni-popup ref="showAuth" type="dialog">
     <uni-popup-dialog content="为保障账户安全, 请完成实名认证" :before-close="true" @confirm="authFn"
      @close="$refs.showAuth.close()" confirm-text="去认证" confirm-color="#EA4E3D"></uni-popup-dialog>
@@ -299,15 +289,13 @@
     },
     components: {uniPopup, uniPopupDialog},
     onShow() {
-		let ls = loginStatus();
-		if (!ls) {
-			uni.navigateTo({
-				url: '/pages/authLogin/authLogin'
-			});
-			return false
-		};
-		this.getUserData();
-		this.$refs.kfShowPopup.open()
+      let ls = loginStatus();
+      if (!ls) {
+        uni.navigateTo({
+          url: '/pages/authLogin/authLogin'
+        });
+        return false
+      };
     },
     onHide() {
       // this.$refs.showAuth.close()

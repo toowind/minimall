@@ -34,20 +34,24 @@
 						<image src="@/static/images/index/quan_icon@2x.png"></image>
 						<text>{{productData.coupon_discount}}元</text>
 					</view>
+          <view class="quan" v-if="!isPg && !isCoupon">
+          	<image src="@/static/images/index/fan_icon.png"></image>
+          	<text>{{formaters(productData.return_cash)}}元</text>
+          </view>
 					<view class="base-pc-price">
-					  <text class="name">{{productData.priceName}}</text>
-					  <text class="currency">¥</text>
-					  <text class="price">{{productData.discountPrice}}</text>
+					  <text class="name">{{P_name}}&nbsp;</text>
+					  <text class="currency">¥&nbsp;</text>
+					  <text class="price">{{P_price}}</text>
 					</view>
 				</view>
 				<view class="earn">
-					<text>分享赚¥{{productData.return_cash}}</text>
+					<text>分享赚¥{{formaters(productData.return_cash)}}</text>
 				</view>
 			</view>
-			<view class="cupon_normal_wrap">
+			<view class="cupon_normal_wrap" v-if="coupon_discount * 1 != 0">
 				<view class="cupon_wrap_left">
-					<view class="cupon"  v-if="Number(productData.coupon_discount) != 0 && productData.isCoupon == 1">
-						<text class="span_one">{{productData.coupon_discount}}</text>
+					<view class="cupon">
+						<text class="span_one">{{formaters(productData.coupon_discount)}}</text>
 						<text class="unit">元&nbsp;</text>
 						<text class="desc">隐藏优惠券</text>
 					</view>
@@ -57,15 +61,23 @@
 				</view>
 			</view>
 		</view>
+    <view class="no_cupon" v-if="isCoupon == 0">
+      <view class="top" v-if="!(isPg && !isCoupon)">注:购买时按原价支付,购买成功后返回[京东分享赚]查看返利</view>
+      <view class="bottom" v-if="!(isPg && !isCoupon)">
+        <image class="img" src="@/static/images/index/no_cupon_bg.png" alt="">
+        <text class="text">*实际返利金额以最终到账为准,每月随收益发放*</text>
+      </view>
+    </view>
 		<view class="gs-copyOrder-wrap" @tap="copyOrderCont">
 			<view class="title">推荐文案, 点击复制</view>
 			<view class="name">[京东]{{ productData.goods_name }}</view>
 			<view class="line">----------------------------------</view>
 			<view class="context">
-				<view>🔥爆款冲量🔥</view>
-				<view style="margin: 10rpx 0px;">❗原价:¥{{ productData.min_group_price }}</view>
-				<view style="margin: 10rpx 0px;">💰券后价: ¥{{ productData.discountPrice }}</view>
-				<view>抢购链接: {{productShareUrl.purchaseUrl || ''}}</view>
+        <view>{{isCoupon == 1?'🔥爆款冲量🔥':'疯了疯了💢'}}</view>
+        <view style="margin:.1rem 0;">{{isPg ==1 && isCoupon ==0?'拼购价':isCoupon == 1?'❗原价':'超低惊喜价'}}:¥{{ isPg ==1 && isCoupon==0?available_price:min_group_price}}</view>
+        <view style="margin:.1rem 0;" v-if="isCoupon == 1">{{`${'💰'+priceName}`}}: ¥{{available_price}}</view>
+        <view style="margin:.1rem 0;" v-else>实惠到爆炸，不买太遗憾了👇</view>
+        <view>{{isCoupon == 1?'下单链接👉': '入口👉'}}: {{productShareUrl.purchaseUrl || ''}}</view>
 			</view>
 		</view>
 		<view class="gs-goodsDetail-wrap" v-if="Object.keys(productData).length && productData.goods_gallery_urls.imageList.length">
@@ -108,7 +120,14 @@
 				queryParams: {}, // 页面参数
 				productData: {}, // 商品详情数据
 				productShareUrl: {}, // 商品分享url 
-				scrollTop:0
+				scrollTop:0,
+        isPg: 0,
+        isCoupon: 0,
+        coupon_discount: 0,
+        P_name: '', // 商品展示名称
+        P_price: 0.00, // 商品展示价格
+        min_group_price: 0.00, // 商品原价
+        available_price: 0.00, // 返回价格
 			}
 		},
 		onPageScroll({scrollTop}) {
@@ -127,6 +146,7 @@
 			  return num.toFixed(2);
 			},
 			return_cash () {
+        // 返利价
 				let that = this;
 				return Object.keys(that.productData).length && Number(that.productData.return_cash).toFixed(2);
 			}
@@ -152,10 +172,36 @@
 					url: url + queryStr
 				});
 			},
+      fix_PN_PR() {
+        if (this.isPg == 1 && this.isCoupon == 1) {
+          this.P_name = '拼购券后价'
+          this.P_price = this.formaters(this.available_price)
+        } else if (this.isPg ==1 && this.isCoupon ==0) {
+          this.P_name = '拼购价'
+          this.P_price = this.formaters(this.available_price)
+        } else if (this.isPg ==0 && this.isCoupon ==1) {
+          this.P_name = '券后价'
+          this.P_price = this.formaters(this.available_price)
+        } else if (this.isPg ==0 && this.isCoupon==0) {
+          this.P_name = '返利价'
+          this.P_price = this.formaters(this.available_price)
+          const n = (Number(this.min_group_price)-this.return_cash).toFixed(2)
+          this.P_price = this.formaters(n)
+        }
+      },
+      
 			// 复制订单内容
 			copyOrderCont () {
 				let that = this,
-				data = `[京东]${that.productData.goods_name}\n----------------------------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
+        data = ''
+        if (this.isCoupon) {
+          data = `[京东]${that.productData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.min_group_price}\n💰${that.P_name}: ¥${that.available_price}，快抢快抢\n下单链接👉: ${that.productShareUrl.purchaseUrl}`;
+        } else {
+          data = `[京东]${that.productData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.isPg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.available_price:that.min_group_price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.productShareUrl.purchaseUrl}`;
+        }
+        
+        
+				// data = `[京东]${that.productData.goods_name}\n----------------------------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
 				uni.setClipboardData({
 					data,
 					success: () => {
@@ -180,6 +226,13 @@
 					if (status === that.$resCode.successCode) {
 						that.productData = data;
 						that.productData.return_cash = (Number(data.return_cash)*Number(data.user_percent || 0.5)).toFixed(2);
+            this.isPg = data.isPg // 是否拼购
+            this.isCoupon = data.isCoupon // 是否有优惠券
+            this.coupon_discount = data.coupon_discount // 优惠券金额
+            this.min_group_price = data.min_group_price
+            this.available_price = Number(data.discountPrice)
+            this.priceName = data.priceName
+            this.fix_PN_PR()
 					}
 				} catch (e) {
 					console.log(e, 'error -> _getProductInfo');
@@ -213,12 +266,34 @@
 						console.log(e)
 					}
 				});
-			}
+			},
+      // 格式化金额
+      formaters(value) {
+        if (!value || Number(value) == 0) return ''
+        value = value.toString()
+        let end = ''
+        if (value.indexOf('.') > -1) {
+          let s = value.split('.')[0]
+          let s1 = value.split('.')[1] && value.split('.')[1].toString()
+          // 01
+          if (s1[0] == 0 && s1[1] == 0) {
+            end = s
+          } else if (s1[0] == 0 && s1[1] != 0) {
+            end = s +'.'+ s1
+          } else if (s1[0] != 0 && s1[1] == 0) {
+            end = s +'.'+ s1[0]
+          } else if (s1[0] != 0 && s1[1] != 0) {
+            end = s +'.'+ s1
+          }
+        } else {
+          end = value
+        }
+        return end
+      },
 		},
 		components: {
 			easyLoadimage
 		}
-		
 	}
 </script>
 
@@ -289,10 +364,12 @@
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
+        padding-bottom: 24rpx;
 				.base-left {
 					display: flex;
 					flex-direction: row;
 					align-items: center;
+          justify-content: baseline;
 					.quan {
 						display: flex;
 						align-items: center;
@@ -324,19 +401,19 @@
 							font-size: 28rpx;
 							font-family: PingFangSC-Regular,PingFang SC;
 							font-weight: 400;
-							color: #666;
+							color: #FF4D52;
 						}
 						.currency {
 							font-size:22rpx;
 							font-family:PingFangSC-Regular,PingFang SC;
 							font-weight:400;
-							color:#333333;
+							color:#FF4D52;
 						}
 						.price {
 							font-size:34rpx;
 							font-family:PingFangSC-Regular,PingFang SC;
 							font-weight:400;
-							color:#333333;
+							color:#FF4D52;
 						}
 						
 					}
@@ -419,6 +496,37 @@
 				}
 			}
 		}
+    .no_cupon {
+        width: 100%;
+        .top {
+          width: 100%;
+          height:48rpx;
+          background:rgba(255,233,235,1);
+          text-align: center;
+          line-height: 48rpx;
+          color:#FF4E52;
+        }
+        .bottom {
+          width: 100%;
+          background: #FFF9E9;
+          padding: 30rpx 30rpx 20rpx;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          .img {
+            width: 690rpx;
+            height: 100rpx;
+            margin-bottom: 30rpx;
+          }
+          .text {
+            font-size:22rpx;
+            font-family:PingFangSC-Regular,PingFang SC;
+            font-weight:400;
+            color:rgba(172,151,94,1);
+          }
+        }
+      }
 		.gs-copyOrder-wrap {
 			margin-top: 15rpx;
 			padding: 30rpx;
