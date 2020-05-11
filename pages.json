@@ -2,12 +2,12 @@
 	"condition": {
 		"current": 0,
 		"list": [
-		  {
-			  "name": "收益",
-			  "path": "pages/profit/orderIndex",
-			  "query": "type=1&dateStr=99"
-		  }
-		]
+      {
+      "name": "收益",
+      "path": "pages/profit/index",
+      "query": "type=1&dateStr=99"
+      }
+    ]
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
@@ -86,7 +86,8 @@
 		{
 			"path": "pages/profit/index",
 			"style": {
-				"navigationBarTitleText": "收益"
+				"navigationBarTitleText": "收益",
+        "navigationStyle": "custom"
 			}
 		},
 		{
