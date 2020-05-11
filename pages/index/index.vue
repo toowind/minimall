@@ -1,13 +1,12 @@
 <template>
 	<view class="fx-idx-container">
-		<view class="idx-fixed-wrap">
+		<view class="idx-fixed-wrap" id="idxFixed">
 			<view class="idx-bar-wrap">
-				<view class="navigation-bar-wrap" :style="{'margin-top': statusBar + 'px', 'height': customBar-statusBar + 'px'}">
+				<view class="navigation-bar-wrap" :style="{'margin-top': statusBar + 'px', 'height': (customBar-statusBar) + 'px'}">
 					<image class="t-text" src="@/static/images/index/logo_icon@2x.png">
 				</view>
 			</view>
 			<view class="idx-top-wrap" :style="{'padding-top': customBar + 'px'}">
-				<image class="t-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
 				<view class="t-search-wrap">
 					<image src="@/static/images/index/search_icon@2x.png" class="t-search-img"></image>
 					<input 
@@ -20,9 +19,9 @@
 				<image src="@/static/images/index/top_bz_icon@2x.png" class="t-tip"></image>
 			</view>
 		</view>
-		<view class="idx-nav-wrap">
+		<view class="idx-nav-wrap" :style="{'margin-top': idxNavPt + 'px'}">
 			<view class="nav-banner-wrap">
-				<image class="nav-bg" src="@/static/images/index/top_bg@2x.png" mode="top"></image>
+				<view class="nav-bg"></view>
 				<swiper 
 					class="swiper" 
 					:indicator-dots="true" 
@@ -31,7 +30,7 @@
 					<swiper-item v-for="(item, key) in activityList" :key="key">
 						<navigator class="swiper-nav" hover-class="none" :url="`/pages/activity/index/index?data=${JSON.stringify(item)}`">
 							<view class="swiper-item">
-								<image :src="item.imgUrl" mode="aspectFill"></image>
+								<image :src="item.imgUrl"></image>
 							</view>
 						</navigator>
 					</swiper-item>
@@ -56,7 +55,7 @@
 			  :style="{'margin-top': menuIsFixed ? 100 + 'rpx' : ''}">
 			<scroll-view 
 			id="menu_wrap"
-			:style="{'padding-top': menuIsFixed ? 300 + 'rpx' : ''}"
+			:style="{'padding-top': menuIsFixed ? idxNavPt + 'px' : ''}"
 			scroll-x 
 			:class="[{'menu-fix-top': menuIsFixed}]"
 			scroll-with-animation 
@@ -152,7 +151,8 @@
 				],
 				clipboardData: null, // 剪切板数据
 				linkType: null, // 1. 京东商品 2.其他商品
-				scrollTop: 0
+				scrollTop: 0,
+				idxNavPt: 0
 			}
 		},
 		onShow() {
@@ -165,6 +165,8 @@
 			let that = this;
 			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
             that.scrollTop = scrollTop;
+			console.log(scrollTop);
+			console.log(that.menuScrollTop)
 			if (scrollTop > that.menuScrollTop) {
 				that.menuIsFixed = true;
 			} else {
@@ -294,10 +296,18 @@
 				let that = this,
 					query = uni.createSelectorQuery().in(that),
 				 	idxFixedWrapHeight = 150; // 顶部固定元素的高度
-				 query.select('#menu_wrap').boundingClientRect(data => {
-				 	// data.top为#menu_wrap距离顶部的高度，减去顶部固定元素的高度。
-				 	that.menuScrollTop = data.top - idxFixedWrapHeight;
-				 }).exec();
+				query.select('#menu_wrap').boundingClientRect();
+				query.select('#idxFixed').boundingClientRect();
+				query.exec(res => {
+					that.idxNavPt = res[1].height;
+					that.menuScrollTop = res[0].top;
+				})
+				 // query.select('#menu_wrap').select('#idxFixed').boundingClientRect(menu, fixed => {
+					//  console.log(menu)
+					//  console.log(fixed)
+				 // 	// data.top为#menu_wrap距离顶部的高度，减去顶部固定元素的高度。
+				 // 	// that.menuScrollTop = data.top - idxFixedWrapHeight;
+				 // }).exec();
 			},
 			// 获取剪切板数据
 			getClipboardData () {
@@ -354,14 +364,15 @@
 	width: 100%;
 	background: $fx-common-back;
 	.idx-fixed-wrap {
-		height: 307rpx;
+		background: url('http://view.youth.cn/20200428butionMall/imgs/top_bg.png') no-repeat center;
+		background-size: cover;
 		z-index: 999;
-		width: 101%;
+		width: 100%;
 		position: fixed;
-		/*--下面这里没什么好奇的，兼容。 删掉有问题--*/
-		margin-top: 30px;
-		top: -30px;
-		/*--下面这里没什么好奇的，兼容。 删掉有问题--*/
+		/*--这里没什么好奇的，兼容。 删掉有问题--*/
+		top: 0;
+		left: 0;
+		/*--这里没什么好奇的，兼容。 删掉有问题--*/
 		.idx-bar-wrap {
 			width: 100%;
 			position: absolute;
@@ -383,14 +394,14 @@
 		}
 		.idx-top-wrap {
 			z-index: 1;
-			margin-top: 15rpx;
+			// margin-top: 15rpx;
 			.t-bg {
 				z-index: -1;
 				width: 101%;
 				height: 100%;
 				position: absolute;
-				left: -3px;
-				top: -3px;
+				left: 0px;
+				top: 0;
 			}
 			.t-search-wrap {
 				padding: 0 25rpx;
@@ -422,30 +433,28 @@
 			.t-tip {
 				padding: 0 25rpx;
 				width: 100%;
-				margin-top: 38rpx;
+				margin-top: 35rpx;
+				margin-bottom: 25rpx;
 				height: 34rpx;
 			}
 		}
 	}
 	.idx-nav-wrap {
-		height: 790rpx;
 		position: relative;
-		padding-top: 375rpx;
 		background-color: #ffffff;
 		.nav-banner-wrap {
 			border-radius:20px;
-			position: absolute;
-			top: 305rpx;
-			left: 0;
 			padding: 0 25rpx;
 			width: 100%;
 			z-index: 9;
 			.nav-bg {
 				position: absolute;
 				width: 100%;
-				height: 578rpx;
+				height: 510rpx;
 				left: 0;
-				top: -510rpx;
+				top: -435rpx;
+				background: url('http://view.youth.cn/20200428butionMall/imgs/top_bg.png') no-repeat center;
+				background-size: cover;
 			}
 			.swiper {
 				height:290rpx;
@@ -463,8 +472,7 @@
 						border-radius:20px;	
 					}
 					image {
-						object-fit: fill;
-						max-height: 100%;
+						height: 290rpx;
 						max-width: 100%;
 						background:#D8D8D8;
 						border-radius:20px;
@@ -473,12 +481,11 @@
 			}
 		}
 		.nav-list {
-			margin-top: 246rpx;
 			display: flex;
 			flex-direction: row;
+			padding: 30rpx 0;
 		}
 		.nav-item {
-			padding: 0rpx 0 30rpx 0;
 			display: flex;
 			justify-content: center;
 			align-items: center;
