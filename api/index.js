@@ -46,5 +46,6 @@ export default {
 	_getProductInfo: (data) => minRequest.post('?s=Jd/Product/getProductInfo', {data: JSON.stringify({...data})}), // 商品详情
 	_getProductShareUrl: (data) => minRequest.post('?s=Jd/Product/getProductShareUrl', {data: JSON.stringify({...data})}), // 商品详情分享Url
 	_getConvertUrls: (data) => minRequest.post('/?s=Jd/Product/getConvertUrls', {data: JSON.stringify({...data})}), // 转链
+  _getUserInfo: (data) => minRequest.post('/?s=Jd/Product/getRandUser', {data: JSON.stringify({...data})}), // 获取滚动用户信息
   }
 }

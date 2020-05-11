@@ -90,7 +90,8 @@
 			"path": "pages/profit/orderIndex",
 			"style": {
 				"navigationBarTitleText": "订单",
-				"onReachBottomDistance":100
+				"onReachBottomDistance":100,
+        "navigationStyle": "custom"
 			}
 		}
 	],
