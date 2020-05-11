@@ -155,7 +155,7 @@
 				idxNavPt: 0
 			}
 		},
-		onShow() {
+		onLoad() {
 			this.init();
 		},
 		onReady() {
@@ -165,8 +165,6 @@
 			let that = this;
 			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
             that.scrollTop = scrollTop;
-			console.log(scrollTop);
-			console.log(that.menuScrollTop)
 			if (scrollTop > that.menuScrollTop) {
 				that.menuIsFixed = true;
 			} else {
@@ -193,11 +191,9 @@
 					netWorkStatus = await that.$methods.checkIsNetwork();
 				if (netWorkStatus) {
 					that.getClipboardData();
-					if(that.goodsListParams.page === 1) {
-						that.getHomeList();
-						that.getGoodsList();
-						that.getActivityList();
-					}
+					that.getHomeList();
+					that.getGoodsList();
+					that.getActivityList();
 				}
 			},
 			readyInit () {
@@ -302,12 +298,6 @@
 					that.idxNavPt = res[1].height;
 					that.menuScrollTop = res[0].top;
 				})
-				 // query.select('#menu_wrap').select('#idxFixed').boundingClientRect(menu, fixed => {
-					//  console.log(menu)
-					//  console.log(fixed)
-				 // 	// data.top为#menu_wrap距离顶部的高度，减去顶部固定元素的高度。
-				 // 	// that.menuScrollTop = data.top - idxFixedWrapHeight;
-				 // }).exec();
 			},
 			// 获取剪切板数据
 			getClipboardData () {
