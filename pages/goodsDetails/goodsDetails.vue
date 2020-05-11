@@ -170,7 +170,7 @@
 			},
 			// 导航跳转到指定页面
 			jumpToPage ({jumpUrl, isLogin=false}, params) {
-				this.$methods.jumpToPage({jumpUrl: url, isLogin: true});
+				this.$methods.jumpToPage({jumpUrl, isLogin: true});
 			},
 			fix_PN_PR() {
 				if (this.isPg == 1 && this.isCoupon == 1) {
