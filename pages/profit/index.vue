@@ -298,18 +298,16 @@
       }
     },
     components: {uniPopup, uniPopupDialog},
-    onLoad() {
-      console.log('----aaaaa--->', uni.getStorageInfoSync('userInfo').uid)
-      const userInfo = uni.getStorageInfoSync('userInfo')
-      if (userInfo && (!userInfo.uid || uni.getStorageInfoSync('userInfo').uid < 0)) {
-        uni.navigateTo({
-          url: '/pages/authLogin/authLogin'
-        })
-      }
-    },
     onShow() {
-      // zq.saCommSendData('myMyAccou', {});
-      this.$refs.kfShowPopup.open()
+		let ls = loginStatus();
+		if (!ls) {
+			uni.navigateTo({
+				url: '/pages/authLogin/authLogin'
+			});
+			return false
+		};
+		this.getUserData();
+		this.$refs.kfShowPopup.open()
     },
     onHide() {
       // this.$refs.showAuth.close()

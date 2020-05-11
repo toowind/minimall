@@ -1,16 +1,16 @@
 <template>
-	<view class="fx-noNetWork-container" :style="'padding-top:' + customBar + 'px'">
+	<view class="fx-noNetWork-container">
 		<image src="@/static/images/common/noNetWork@2x.png"></image>
 		<text class="noNetWork-text">网络连接失败, 请稍后重试!</text>
-		<button type="default" class="refresh">点击刷新</button>
+		<button type="default" class="refresh" @click="refresh">点击刷新</button>
 	</view>
 </template>
 
 <script>
 	export default {
-		data () {
-			return {
-				customBar: this.customBar
+		methods: {
+			refresh () {
+				uni.navigateBack();
 			}
 		}
 	}

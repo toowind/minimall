@@ -19,6 +19,12 @@
 			}
 		},
 		{
+			"path": "pages/noNetWork/noNetWork",
+			"style": {
+				"navigationBarTitleText": "每日折上折"
+			}
+		},
+		{
 			"path": "pages/goodsSearch/goodsSearch",
 			"style": {
 				"navigationBarTitleText": "商品搜索",
@@ -84,20 +90,19 @@
         "navigationStyle": "custom"
 			}
 		},
-    {
-    	"path": "pages/profit/certifyUser",
-    	"style": {
-    		"navigationBarTitleText": "验证"
-    	}
-    },
-    {
-    	"path": "pages/profit/orderIndex",
-    	"style": {
-    		"navigationBarTitleText": "订单",
-        "onReachBottomDistance":100,
-        "navigationStyle": "custom"
-    	}
-    }
+		{
+			"path": "pages/profit/certifyUser",
+			"style": {
+				"navigationBarTitleText": "验证"
+			}
+		},
+		{
+			"path": "pages/profit/orderIndex",
+			"style": {
+				"navigationBarTitleText": "订单",
+				"onReachBottomDistance":100
+			}
+		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

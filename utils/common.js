@@ -78,6 +78,31 @@ export default COMMON = (function (_undefined) {
 					url: url + queryStr
 				});
 			},
+			// 检查当前是否有网络
+			checkIsNetwork () {
+				return new Promise((resolve, reject) => {
+					uni.getNetworkType({
+						success: ({networkType}) => {
+							if (networkType === 'none') {
+								uni.hideLoading();
+								uni.showLoading({
+									title: '数据加载中...',
+									mask: true // 是否显示透明蒙层，防止触摸穿透
+								});
+								// 没有网络
+								this.jumpToPage({jumpUrl: '/pages/noNetWork/noNetWork'});
+								resolve(false);
+							} else {
+								resolve(true);
+							}
+						},
+						fail() {
+							resolve(true);
+							console.log('err -> isHasNetwork')
+						}
+					})
+				});
+			}
 		},
         common: {
             // type 类型判断

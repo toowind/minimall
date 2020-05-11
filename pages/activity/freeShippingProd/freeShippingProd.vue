@@ -28,7 +28,7 @@
 				}
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.init();
 		},
 		onPageScroll ({scrollTop}) {
@@ -51,9 +51,14 @@
 			that.getFspListData();
 		},
 		methods: {
-			init() {
-				let that = this;
-				that.getFspListData();
+			async init() {
+				let that = this,
+					netWorkStatus = await that.$methods.checkIsNetwork();
+				if (netWorkStatus) {
+					if (that.goodsListParams.page === 1) {
+						that.getFspListData();
+					}
+				}
 			},
 			async getFspListData () {
 				try {
