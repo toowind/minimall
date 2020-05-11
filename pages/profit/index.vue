@@ -217,7 +217,7 @@
   </view>
 </template>
 <script>
-  import { getToken } from '../../utils/auth.js'
+  import { getToken, loginStatus, setUserInfo } from '@/utils/auth.js'	
   import uniPopup from '@/components/uni-popup/uni-popup.vue'
   import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
   // import {_getUserData, _getOrderData, _withdraw} from '@/api/module/user.js'

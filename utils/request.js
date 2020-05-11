@@ -9,7 +9,8 @@ class MinRequest {
     method: 'GET',
 	data: {},
     dataType: 'json',
-    responseType: 'text'
+    responseType: 'text',
+	timeout: 10000
   }
 
   interceptors = {

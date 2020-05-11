@@ -12,8 +12,8 @@ minRequest.interceptors.request((request) => {
 minRequest.interceptors.response((response) => {
   if (response.data.status != '0') {
 	  uni.showToast({
-		  title: (response.data && response.data.info) || '服务器开小差了...',
-		  duration: 2000,
+		  title: (response.data && response.data.info) || '信息加载失败，请稍后重试！',
+		  duration: 3000,
 		  icon: 'none'
 	  })
   }
