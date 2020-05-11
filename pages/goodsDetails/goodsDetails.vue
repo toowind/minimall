@@ -82,7 +82,7 @@
 			</view>
 		</view>
 		<view class="gs-bottom-wrap">
-			<view class="home-tag" @tap="jumpToPage('../index/index')">
+			<view class="home-tag" @tap="jumpToPage({jumpUrl: '../index/index'})">
 				<image src="@/static/images/goodsDetails/tab_home_icon@2x.png" mode=""></image>
 				<text>首页</text>
 			</view>
@@ -91,10 +91,18 @@
 						<text>自己买</text>
 						<text>省{{ allCash }}元</text>
 				</navigator>
-				<navigator class="buy-share" target="miniProgram" app-id="wx91d27dbf599dff74">
-					<text>分享让好友购买</text>
-					<text>赚{{ return_cash }}元</text>
-				</navigator>
+				<template v-if="loginStatus">
+					<navigator class="buy-share" open-type="share" app-id="wx91d27dbf599dff74">
+						<text>分享让好友购买</text>
+						<text>赚{{ return_cash }}元</text>
+					</navigator>
+				</template>
+				<template v-else>
+					<navigator class="buy-share" @tap="jumpToPage({jumpUrl: '../authLogin/authLogin', isLogin: true})">
+						<text>分享让好友购买</text>
+						<text>赚{{ return_cash }}元</text>
+					</navigator>
+				</template>
 			</view>
 		</view>
 	</view>
@@ -102,13 +110,15 @@
 
 <script>
 	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
+	import {loginStatus} from '@/utils/auth.js'
 	export default {
 		data () {
 			return {
 				queryParams: {}, // 页面参数
 				productData: {}, // 商品详情数据
 				productShareUrl: {}, // 商品分享url 
-				scrollTop:0
+				scrollTop:0,
+				loginStatus: null
 			}
 		},
 		onPageScroll({scrollTop}) {
@@ -118,6 +128,7 @@
 		onLoad(e) {
 			let that = this;
 			that.queryParams = e;
+			that.loginStatus = loginStatus();
 			that.init();
 		},
 		computed: {
@@ -138,19 +149,8 @@
 				that.getProductShareUrl();
 			},
 			// 导航跳转到指定页面
-			jumpToPage (url, params) {
-				let queryStr = '?';
-				if (params && Object.keys(params).length > 0) {
-					for (let key in params) {
-						queryStr += key + '=' + params[key] + '&';
-					}
-					if (queryStr.endsWith('&')) {
-						queryStr = queryStr.substring(0, queryStr.length-1);
-					}
-				}
-				uni.switchTab({
-					url: url + queryStr
-				});
+			jumpToPage ({jumpUrl, isLogin=false}, params) {
+				this.$methods.jumpToPage({jumpUrl: url, isLogin: true});
 			},
 			// 复制订单内容
 			copyOrderCont () {
@@ -192,7 +192,6 @@
 						{status, data} = await that.$Kapi._getProductShareUrl(queryParams);
 					if (status === that.$resCode.successCode) {
 						that.productShareUrl = data;
-						console.log(data);
 					}
 				} catch (e) {
 					console.log(e, 'error -> _getProductShareUrl');
@@ -200,6 +199,13 @@
 			},
 			// 跳转其他app
 			jumpOtherApp () {
+				let ls = loginStatus();
+				if (!ls) {
+					uni.navigateTo({
+						url: '/pages/authLogin/authLogin'
+					});
+					return false
+				};
 				wx.navigateToMiniProgram({
 					appId: "wx91d27dbf599dff74",
 					path: `pages/union/proxy/proxy?spreadUrl=${this.productShareUrl.purchaseUrl}&EA_PTAG=17078.27.118`,

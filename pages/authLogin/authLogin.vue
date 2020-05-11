@@ -52,6 +52,13 @@
 				}
 			},
 			cancel () {
+				let pages = getCurrentPages();
+				if (pages[0].route.indexOf('pages/profit/index') >= 0) {
+					uni.switchTab({
+						url: '/pages/index/index'
+					});
+					return;
+				}
 				uni.navigateBack();
 			}
 		}
