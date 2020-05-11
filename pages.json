@@ -4,7 +4,7 @@
 		"list": [
       {
       "name": "收益",
-      "path": "pages/profit/orderIndex",
+      "path": "pages/profit/index",
       "query": "type=1&dateStr=99"
       }
     ]
@@ -80,7 +80,8 @@
 		{
 			"path": "pages/profit/index",
 			"style": {
-				"navigationBarTitleText": "收益"
+				"navigationBarTitleText": "收益",
+        "navigationStyle": "custom"
 			}
 		},
     {
@@ -94,10 +95,7 @@
     	"style": {
     		"navigationBarTitleText": "订单",
         "onReachBottomDistance":100,
-        "usingComponents": {
-          // "van-datetime-picker": "/wxcomponents/vant/datetime-picker/index",
-          // "van-popup": "/wxcomponents/vant/popup/index"
-        }
+        "navigationStyle": "custom"
     	}
     }
 	],

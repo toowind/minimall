@@ -1,20 +1,23 @@
 <template>
   <view class="income">
-    <view ref="warp">
+    <view class="navTitle" :style="{'padding-top': statusBar + 'px',height:customBar+'px'}">收益</view>
+    <view ref="warp" :style="{'padding-top': customBar - 1 +'px'}">
       <view class="title">
-        <view class="left">
-          <view class="text">
-            可提现金额
-            <image src="./../../static/images/profit/sy_help_icon.png" alt="" @tap="$refs.isShowPopup3.open()" />
+        <view class="title_bottom">
+          <view class="left">
+            <view class="text">
+              可提现金额
+              <image src="./../../static/images/profit/sy_help_icon.png" alt="" @tap="$refs.isShowPopup3.open()" />
+            </view>
+            <view class="money">
+              {{ t_money == 0 ? Number(t_money).toFixed(2) : Number(t_money/100).toFixed(2) }}
+              <text class="unit">元</text>
+            </view>
           </view>
-          <view class="money">
-            {{ t_money == 0 ? Number(t_money).toFixed(2) : Number(t_money/100).toFixed(2) }}
-            <text class="unit">元</text>
+          <view class="withDraw" @click="withdrawalThrottle">
+            提现
+            <image class="img" src="./../../static/images/profit/next_icon.png" alt="" />
           </view>
-        </view>
-        <view class="withDraw" @click="withdrawalThrottle">
-          提现
-          <image class="img" src="./../../static/images/profit/next_icon.png" alt="" />
         </view>
       </view>
       <view class="count">
@@ -150,10 +153,10 @@
       </view>
     </view>
   </uni-popup> -->
-  <uni-popup ref="showAuth" type="dialog">
+  <!-- <uni-popup ref="showAuth" type="dialog">
     <uni-popup-dialog content="为保障账户安全, 请完成实名认证" :before-close="true" @confirm="authFn"
      @close="$refs.showAuth.close()" confirm-text="去认证" confirm-color="#EA4E3D"></uni-popup-dialog>
-  </uni-popup>
+  </uni-popup> -->
 
 
   <uni-popup ref="showTransfer" :maskClick="false" class="transfer-container">
@@ -202,7 +205,12 @@
         <text>进入客服会话, 发送“1”获取公众号二维码.</text>
         <text class="kf_ps">ps: 也可点击右下角图标获取</text>
       </view>
-      <button class="btn" open-type="contact">进入客服会话</button>
+      <button class="btn" open-type="contact"
+        :show-message-card="true"
+        send-message-img="https://bkimg.cdn.bcebos.com/pic/b03533fa828ba61e1278147a4f34970a314e59d5?x-bce-process=image/resize,m_lfit,w_268,limit_1/format,f_jpg"
+        send-message-path="/pages/index/index"
+        send-message-title="每日折上折"
+       >进入客服会话</button>
       <image @tap="$refs.kfShowPopup.close()" class="close" src="./../../static/images/profit/close_icon.png" alt="">
     </view>
   </uni-popup>
@@ -252,6 +260,8 @@
   export default {
     data() {
       return {
+        customBar: this.customBar,
+        statusBar: this.statusBar,
         isShowPopup: false,
         tabsActive: 1,
         t_money: 0, // 提现金额
@@ -288,39 +298,23 @@
       }
     },
     components: {uniPopup, uniPopupDialog},
+    onLoad() {
+      console.log('----aaaaa--->', uni.getStorageInfoSync('userInfo').uid)
+      const userInfo = uni.getStorageInfoSync('userInfo')
+      if (userInfo && (!userInfo.uid || uni.getStorageInfoSync('userInfo').uid < 0)) {
+        uni.navigateTo({
+          url: '/pages/authLogin/authLogin'
+        })
+      }
+    },
     onShow() {
       // zq.saCommSendData('myMyAccou', {});
-      this.getUserData();
       this.$refs.kfShowPopup.open()
     },
     onHide() {
-      this.$refs.showAuth.close()
+      // this.$refs.showAuth.close()
     },
     methods: {
-      // 获取用户信息
-      getUserData() {
-        return new Promise(resolve => {
-          this.$Qapi._getUserData().then(res => {
-            let {
-              status,
-              data
-            } = res;
-            if (status === 0) {
-              this.t_money = data.money;
-              this.is_bind_card = data.userInfo.is_bind_card;
-              uni.getStorage({
-                key: 'is_bind_card',
-                success: () => {},
-                fail:() => {
-                  uni.setStorage('is_bind_card', data.userInfo.is_bind_card)
-                }
-              })
-              uni.setStorageSync('userInfo', data.userInfo)
-              this.getOrderData();
-            }
-          });
-        });
-      },
       // 获取订单数据
       getOrderData() {
         this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
@@ -358,32 +352,29 @@
       // 用户点击提现, 查看是否认证
       withdrawalThrottle: throttle('cashWithdrawal', 1000, 1),
       cashWithdrawal() {
-        let is_bind_card = uni.getStorageSync('is_bind_card');
-        if (is_bind_card == 0) {
-          // 未认证则让用户去认证
-          this.$refs.showAuth.open();
+        if (this.t_money != 0) {
+          // 认证了
+          this.$Qapi._withdraw().then(res => {
+            if (res.status == 0) {
+              this.t_money = 0;
+              this.$refs.showTransfer.open()
+            } else if (res.status == 404) {
+              // 判断是否存在中青账户
+              this.$refs.kfShowPopup.open()
+            } else {
+              uni.showToast({
+                title: '操作失败，请联系客服或稍后重试',
+                duration: 2000,
+                position: 'center'
+              })
+            }
+          });
         } else {
-          if (this.t_money != 0) {
-            // 认证了
-            this.$Qapi._withdraw().then(res => {
-              if (res.status == 0) {
-                this.t_money = 0;
-                this.$refs.showTransfer.open()
-              } else {
-                uni.showToast({
-                  title: '操作失败，请联系客服或稍后重试',
-                  duration: 2000,
-                  position: 'center'
-                })
-              }
-            });
-          } else {
-            uni.showToast({
-              title: '无可提现金额',
-              duration: 2000,
-              position: 'center'
-            })
-          }
+          uni.showToast({
+            title: '无可提现金额',
+            duration: 2000,
+            position: 'center'
+          })
         }
       },
       authFn() {
@@ -470,10 +461,6 @@
           this.$refs.isShowPopup2.open()
           // this.isShowPopup2 = !this.isShowPopup2;
         }
-      },
-      // 进入微信客服
-      goWxkf() {
-        
       }
     }
   };
@@ -481,16 +468,37 @@
 <style lang="scss">
   .income {
     background: rgba(246, 246, 246, 1);
-
+    .navTitle {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size:36rpx;
+      font-family:PingFangSC-Regular,PingFang SC;
+      font-weight:400;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      background: url("./../../static/images/profit/sy_top_bg.png") no-repeat;
+      background-size: cover;
+    }
     .title {
-      height: 186upx;
       background: url("./../../static/images/profit/sy_top_bg.png") no-repeat;
       background-size: cover;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 40upx;
-
+      flex-direction: column;
+      .title_bottom {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40upx;
+        height: 186upx;
+      }
       .left {
         display: flex;
         justify-content: center;

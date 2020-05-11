@@ -1,6 +1,11 @@
 <template>
   <view class="order-container">
-    <view class="order-top-wrap">
+    <view class="navTitle" :style="{'padding-top': statusBar + 'px',height:customBar+'px'}">
+      <image class="back" src="../../static/images/profit/back_icon.png" mode="" @tap="backFn"></image>
+      <text>{{navTitle}}</text>
+    </view>
+    <view :style="{height: customBar -1 +'px'}"></view>
+    <view class="order-top-wrap" >
       <view class="o-t-time">
         <picker mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
            <text class="rq">{{ displayTime }}</text>
@@ -161,6 +166,9 @@
     },
     data() {
       return {
+        customBar: this.customBar,
+        statusBar: this.statusBar,
+        navTitle: '',
         minDate: new Date(2000, 0, 1).getTime(),
         maxDate: new Date().getTime(),
         currentDate: new Date().getTime(),
@@ -226,14 +234,10 @@
     },
     onReady() {
       if (this.type == 1) {
-        uni.setNavigationBarTitle({
-          title: '领券自购订单'
-        })
+          this.navTitle= '领券自购订单'
         // zq.saCommSendData('selfOrder', {}); // 自购订单
       } else {
-        uni.setNavigationBarTitle({
-          title: '分销推广订单'
-        })
+          this.navTitle = '分销推广订单'
         // zq.saCommSendData('distributionOrder', {}); // 分销订单
       }
     },
@@ -471,6 +475,9 @@
         }
         this.orderParams = params;
         this.getOrderData(this.tabsActive);
+      },
+      backFn(){
+        uni.navigateBack({delta:1})
       }
     }
   }
@@ -480,6 +487,28 @@
 </style>
 <style lang="scss">
   .order-container {
+    .navTitle {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color:rgba(51,51,51,1);
+      font-size:36rpx;
+      font-family:PingFangSC-Regular,PingFang SC;
+      font-weight:400;
+      background-color: #fff;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      .back {
+        width: 22rpx;
+        height: 36rpx;
+        position: absolute;
+        left: 28rpx;
+        bottom: 20rpx;
+      }
+    }
     width: 100%;
     height: 100%;
     background-color: #F6F6F6;
