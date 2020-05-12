@@ -124,307 +124,229 @@
 		</view>
 	</view>
 </template>
-
 <script>
 import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 import { loginStatus, getUserinfo } from '@/utils/auth.js'
-export default {
-	data() {
-		return {
-			queryParams: {
-				isShare: 0 // 是否分享  0为A自己，1为A分享给B
-			}, // 页面参数
-			productData: {}, // 商品详情数据
-			productShareUrl: {}, // 商品分享url 
-			scrollTop: 0,
-			isPg: 0,
-			isCoupon: null,
-			coupon_discount: 0,
-			P_name: '', // 商品展示名称
-			P_price: 0.00, // 商品展示价格
-			min_group_price: 0.00, // 商品原价
-			available_price: 0.00, // 返回价格
-			priceName: '',
-			imgList: {},
-			userList: [{
-					avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang36.jpg/120x120',
-					nickname: '祥海祥海祥海祥海祥海'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_13v_5e94334b027a145918149f.jpg/120x120',
-					nickname: '兔白白'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_13q_5e94333f6307945918148u.jpg/120x120',
-					nickname: '天王盖地虎'
-				},
-				{
-					avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang55.jpg/120x120',
-					nickname: '花妮'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_13f_5e9433309451d45918145t.jpg/120x120',
-					nickname: 'JB and NH'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_13v_5e9433350a0ed45918144u.jpg/120x120',
-					nickname: '郭生'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_13o_5e9433394b39345918143v.jpg/120x120 ',
-					nickname: '花朵'
-				},
-				{
-					avatar: 'http://res.youth.cn/avatar_202004_13_130_5e94332e2015945918142a.jpg/120x120',
-					nickname: '策离'
-				},
-				{
-					avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang26.jpg/120x120 ',
-					nickname: '洛洛憬'
-				},
-			],
-			loginStatus: null
-		}
-	},
-	onPageScroll({scrollTop}) {
-		// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
-		this.scrollTop = scrollTop;
-	},
-	onLoad(e) {
-		let that = this;
-		that.queryParams = Object.assign(that.queryParams, e);
-		if (uni.getStorageSync('isShare') == 1){
-			that.queryParams.isShare = uni.getStorageSync('isShare');
-		}
-		if (that.queryParams.isShare == 1 && that.queryParams.parent_uid) {
-			uni.setStorage({
-				key: 'isShare',
-				data: that.queryParams.isShare,
-				success() {
-					console.log('success');
-				},
-				fail() {
-					console.log('setStorage: isShare -> fail');
-				}
-			});
-			
-			uni.setStorage({
-				key: 'parent_uid',
-				data: that.queryParams.parent_uid,
-				success() {
-					console.log('success');
-				},
-				fail() {
-					console.log('setStorage: parent_uid -> fail');
-				}
-			});
-		}
-		that.loginStatus = loginStatus();
-		that.init();
-	},
-	onShow() {
-		let that = this;
-		that.loginStatus = loginStatus();
-	},
-	onShareAppMessage(res) {
-		let that = this,
-			userUid = getUserinfo()['uid'];
-		if (res.from === 'button') {
-			return {
-				title: that.productData.goods_name,
-				imageUrl: that.productData.goods_gallery_urls[0],
-				path: `/pages/goodsDetails/goodsDetails?goods_id=${that.productData.goods_id}&isShare=1&parent_uid=${userUid}`
-			}
-		}
-	},
-	computed: {
-		allCash() {
-			let that = this,
-				num = Object.keys(this.productData).length && (Number(that.productData.coupon_discount) + Number(that.productData
-					.return_cash));
-			return num.toFixed(2);
-		},
-		return_cash() {
-			// 返利价
-			let that = this;
-			return Object.keys(that.productData).length && Number(that.productData.return_cash).toFixed(2);
-		}
-	},
-	methods: {
-		init() {
-			let that = this;
-			that.getProductInfo();
-			that.getProductShareUrl();
-		},
-		// 导航跳转到指定页面
-		jumpToPage({
-			jumpUrl,
-			isLogin = false,
-			switchTab = false
-		}, params) {
-			this.$methods.jumpToPage({
-				jumpUrl,
-				isLogin,
-				switchTab
-			});
-		},
-		fix_PN_PR() {
-			if (this.isPg == 1 && this.isCoupon == 1) {
-				this.P_name = '拼购券后价'
-				this.P_price = this.formaters(this.available_price)
-			} else if (this.isPg == 1 && this.isCoupon == 0) {
-				this.P_name = '拼购价'
-				this.P_price = this.formaters(this.available_price)
-			} else if (this.isPg == 0 && this.isCoupon == 1) {
-				this.P_name = '券后价'
-				this.P_price = this.formaters(this.available_price)
-			} else if (this.isPg == 0 && this.isCoupon == 0) {
-				this.P_name = '返利价'
-				this.P_price = this.formaters(this.available_price)
-				const n = (Number(this.min_group_price) - this.return_cash).toFixed(2)
-				this.P_price = this.formaters(n)
-			}
-		},
-		// 复制订单内容
-		copyOrderCont() {
-			let that = this,
-				data = ''
-			if (this.isCoupon) {
-				data =
-					`[京东]${that.productData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.min_group_price}\n💰${that.P_name}: ¥${that.available_price}，快抢快抢\n下单链接👉: ${that.productShareUrl.purchaseUrl}`;
-			} else {
-				data =
-					`[京东]${that.productData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.isPg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.available_price:that.min_group_price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.productShareUrl.purchaseUrl}`;
-			}
-			uni.setClipboardData({
-				data,
-				success: () => {
-					uni.showToast({
-						title: '专属链接复制成功',
-						duration: 3000,
-						icon: 'none'
-					});
-					console.log('setClipboardData->success');
-				},
-				fail: () => {
-					console.log('setClipboardData->fail');
-				}
-			})
-		},
-		// 获取商品详情数据
-		async getProductInfo() {
-			try {
-				let that = this,
-					queryParams = that.queryParams,
-					{
-						status,
-						data
-					} = await that.$Kapi._getProductInfo(queryParams);
-				if (status === that.$resCode.successCode) {
-					that.productData = data;
-					that.productData.return_cash = (Number(data.return_cash) * Number(data.user_percent || 0.5)).toFixed(2);
-					this.isPg = data.isPg // 是否拼购
-					this.isCoupon = data.isCoupon // 是否有优惠券
-					this.coupon_discount = data.coupon_discount // 优惠券金额
-					this.min_group_price = data.min_group_price
-					this.available_price = Number(data.discountPrice)
-					this.priceName = data.priceName
-					this.fix_PN_PR()
-					this.getUserInfo(this.return_cash)
-				}
-			} catch (e) {
-				console.log(e, 'error -> _getProductInfo');
-			}
-		},
-		async getProductShareUrl() {
-			try {
-				let that = this,
-					queryParams = that.queryParams,
-					{
-						status,
-						data
-					} = await that.$Kapi._getProductShareUrl(queryParams);
-				if (status === that.$resCode.successCode) {
-					that.productShareUrl = data;
-					console.log(data);
-				}
-			} catch (e) {
-				console.log(e, 'error -> _getProductShareUrl');
-			}
-		},
-		// 获取滚动用户信息
-		async getUserInfo(e) {
-			let {
-				status,
-				data
-			} = await this.$Kapi._getUserInfo()
-			if (status == 0) {
-				data.map(item => {
-					const random = parseInt((Math.random() * 10)) + 1
-					item.cash = (e * random).toFixed(2)
-				})
-				this.userList = data
-			} else {
-				this.userList.map(item => {
-					const random = parseInt((Math.random() * 10)) + 1
-					item.cash = (e * random).toFixed(2)
-				})
-			}
-		},
-		// 跳转其他app
-		jumpOtherApp() {
-			let ls = loginStatus();
-			if (!ls) {
-				this.$methods.jumpToPage({
-					jumpUrl: '/pages/authLogin/authLogin'
-				}, {
-					type: 8,
-					methodFnStr: 'jumpOtherApp'
-				});
-				return false;
-			};
-			wx.navigateToMiniProgram({
-				appId: "wx91d27dbf599dff74",
-				path: `pages/union/proxy/proxy?spreadUrl=${this.productShareUrl.purchaseUrl}&EA_PTAG=17078.27.118`,
-				extraData: {
-					open: "auth"
-				},
-				success(res) {
-					console.log(res);
-				},
-				fail(e) {
-					console.log(e)
-				}
-			});
-		},
-		// 格式化金额
-		formaters(value) {
-			if (!value || Number(value) == 0) return ''
-			value = value.toString()
-			let end = ''
-			if (value.indexOf('.') > -1) {
-				let s = value.split('.')[0]
-				let s1 = value.split('.')[1] && value.split('.')[1].toString()
-				// 01
-				if (s1[0] == 0 && s1[1] == 0) {
-					end = s
-				} else if (s1[0] == 0 && s1[1] != 0) {
-					end = s + '.' + s1
-				} else if (s1[0] != 0 && s1[1] == 0) {
-					end = s + '.' + s1[0]
-				} else if (s1[0] != 0 && s1[1] != 0) {
-					end = s + '.' + s1
-				}
-			} else {
-				end = value
-			}
-			return end
-		}
-	},
-	components: {
-		easyLoadimage
-	}
-}
+  export default {
+    data() {
+      return {
+        queryParams: {}, // 页面参数
+        productData: {}, // 商品详情数据
+        productShareUrl: {}, // 商品分享url 
+        scrollTop: 0,
+        isPg: 0,
+        isCoupon: null,
+        coupon_discount: 0,
+        P_name: '', // 商品展示名称
+        P_price: 0.00, // 商品展示价格
+        min_group_price: 0.00, // 商品原价
+        available_price: 0.00, // 返回价格
+        priceName: '',
+        imgList: {},
+        userList: [
+          {avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang36.jpg/120x120', nickname: '祥海祥海祥海祥海祥海'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_13v_5e94334b027a145918149f.jpg/120x120', nickname: '兔白白'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_13q_5e94333f6307945918148u.jpg/120x120', nickname: '天王盖地虎'},
+          {avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang55.jpg/120x120', nickname: '花妮'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_13f_5e9433309451d45918145t.jpg/120x120', nickname: 'JB and NH'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_13v_5e9433350a0ed45918144u.jpg/120x120', nickname: '郭生'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_13o_5e9433394b39345918143v.jpg/120x120 ', nickname: '花朵'},
+          {avatar: 'http://res.youth.cn/avatar_202004_13_130_5e94332e2015945918142a.jpg/120x120', nickname: '策离'},
+          {avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang26.jpg/120x120 ', nickname: '洛洛憬'},
+        ]
+      }
+    },
+    onPageScroll({
+      scrollTop
+    }) {
+      // 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+      this.scrollTop = scrollTop;
+    },
+    onLoad(e) {
+      let that = this;
+      that.queryParams = e;
+      that.init();
+    },
+    computed: {
+      allCash() {
+        let that = this,
+          num = Object.keys(this.productData).length && (Number(that.productData.coupon_discount) + Number(that.productData
+            .return_cash));
+        return num.toFixed(2);
+      },
+      return_cash() {
+        // 返利价
+        let that = this;
+        return Object.keys(that.productData).length && Number(that.productData.return_cash).toFixed(2);
+      }
+    },
+    methods: {
+      init() {
+        let that = this;
+        that.getProductInfo();
+        that.getProductShareUrl();
+      },
+      // 导航跳转到指定页面
+      jumpToPage({ jumpUrl, isLogin = false, switchTab = false }, params) {
+      	this.$methods.jumpToPage({
+      		jumpUrl,
+      		isLogin,
+      		switchTab
+      	});
+      },
+      fix_PN_PR() {
+        if (this.isPg == 1 && this.isCoupon == 1) {
+          this.P_name = '拼购券后价'
+          this.P_price = this.formaters(this.available_price)
+		  //跳精喜
+        } else if (this.isPg == 1 && this.isCoupon == 0) {
+          this.P_name = '拼购价'
+		  //跳精喜
+          this.P_price = this.formaters(this.available_price)
+        } else if (this.isPg == 0 && this.isCoupon == 1) {
+          this.P_name = '券后价'
+          this.P_price = this.formaters(this.available_price)
+        } else if (this.isPg == 0 && this.isCoupon == 0) {
+          this.P_name = '返利价'
+          this.P_price = this.formaters(this.available_price)
+          const n = (Number(this.min_group_price) - this.return_cash).toFixed(2)
+          this.P_price = this.formaters(n)
+        }
+      },
+
+      // 复制订单内容
+      copyOrderCont() {
+        let that = this,
+          data = ''
+        if (this.isCoupon) {
+          data =
+            `[京东]${that.productData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.min_group_price}\n💰${that.P_name}: ¥${that.available_price}，快抢快抢\n下单链接👉: ${that.productShareUrl.purchaseUrl}`;
+        } else {
+          data =
+            `[京东]${that.productData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.isPg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.available_price:that.min_group_price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.productShareUrl.purchaseUrl}`;
+        }
+
+
+        // data = `[京东]${that.productData.goods_name}\n----------------------------------\n京东价:¥${that.productData.min_group_price}\n券后价: ¥${that.productData.discountPrice}\n抢购链接: ${that.productShareUrl.purchaseUrl}`;
+        uni.setClipboardData({
+          data,
+          success: () => {
+            uni.showToast({
+              title: '专属链接复制成功',
+              duration: 3000,
+              icon: 'none'
+            });
+            console.log('setClipboardData->success');
+          },
+          fail: () => {
+            console.log('setClipboardData->fail');
+          }
+        })
+      },
+      // 获取商品详情数据
+      async getProductInfo() {
+        try {
+          let that = this,
+            queryParams = that.queryParams,
+            {
+              status,
+              data
+            } = await that.$Kapi._getProductInfo(queryParams);
+          if (status === that.$resCode.successCode) {
+            that.productData = data;
+            that.productData.return_cash = (Number(data.return_cash) * Number(data.user_percent || 0.5)).toFixed(2);
+            this.isPg = data.isPg // 是否拼购
+            this.isCoupon = data.isCoupon // 是否有优惠券
+            this.coupon_discount = data.coupon_discount // 优惠券金额
+            this.min_group_price = data.min_group_price
+            this.available_price = Number(data.discountPrice)
+            this.priceName = data.priceName
+            this.fix_PN_PR()
+            this.getUserInfo(this.return_cash)
+          }
+        } catch (e) {
+          console.log(e, 'error -> _getProductInfo');
+        }
+      },
+      async getProductShareUrl() {
+        try {
+          let that = this,
+            queryParams = that.queryParams,
+            {
+              status,
+              data
+            } = await that.$Kapi._getProductShareUrl(queryParams);
+          if (status === that.$resCode.successCode) {
+            that.productShareUrl = data;
+            console.log(data);
+          }
+        } catch (e) {
+          console.log(e, 'error -> _getProductShareUrl');
+        }
+      },
+      // 获取滚动用户信息
+      async getUserInfo(e) {
+        let {
+          status,
+          data
+        } = await this.$Kapi._getUserInfo()
+        if (status == 0) {
+          data.map(item => {
+            const random = parseInt((Math.random()*10)) + 1
+            item.cash = (e *random).toFixed(2)
+          })
+          this.userList = data
+        } else {
+          this.userList.map(item => {
+            const random = parseInt((Math.random()*10)) + 1
+            item.cash = (e *random).toFixed(2)
+          })
+        }
+      },
+      // 跳转其他app
+      jumpOtherApp() {
+        wx.navigateToMiniProgram({
+          appId: "wx91d27dbf599dff74",
+          path: `pages/union/proxy/proxy?spreadUrl=${this.productShareUrl.purchaseUrl}&EA_PTAG=17078.27.118`,
+          extraData: {
+            open: "auth"
+          },
+          success(res) {
+            console.log(res);
+          },
+          fail(e) {
+            console.log(e)
+          }
+        });
+      },
+      // 格式化金额
+      formaters(value) {
+        if (!value || Number(value) == 0) return ''
+        value = value.toString()
+        let end = ''
+        if (value.indexOf('.') > -1) {
+          let s = value.split('.')[0]
+          let s1 = value.split('.')[1] && value.split('.')[1].toString()
+          // 01
+          if (s1[0] == 0 && s1[1] == 0) {
+            end = s
+          } else if (s1[0] == 0 && s1[1] != 0) {
+            end = s + '.' + s1
+          } else if (s1[0] != 0 && s1[1] == 0) {
+            end = s + '.' + s1[0]
+          } else if (s1[0] != 0 && s1[1] != 0) {
+            end = s + '.' + s1
+          }
+        } else {
+          end = value
+        }
+        return end
+      },
+    },
+    components: {
+      easyLoadimage
+    }
+  }
 </script>
 
 <style lang="scss">
