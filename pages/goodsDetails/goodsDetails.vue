@@ -184,7 +184,7 @@ export default {
 				},
 			],
 			loginStatus: null,
-			parentPurchaseUrl: 'test' // 父的链接
+			parentPurchaseUrl: '' // 父的链接
 		}
 	},
 	onPageScroll({scrollTop}) {
