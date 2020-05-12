@@ -189,8 +189,8 @@
           page: 1,
           page_size: 8,
           status: 1,
-          // uid: uni.getStorageInfoSync('userInfo') ? uni.getStorageInfoSync('userInfo').uid : '43714797'
-          uid: '43714797'
+          uid: uni.getStorageInfoSync('userInfo') ? uni.getStorageInfoSync('userInfo').uid : '43714797'
+          // uid: '43714797'
         },
         // 订单数据映射
         getUserSelectOrderType: {
@@ -441,8 +441,8 @@
             page: 1,
             page_size: 8,
             status: this.tabsActive,
-            // uid: uni.getStorageInfoSync('userInfo') ? uni.getStorageInfoSync('userInfo').uid : '43714797',
-            uid: '43714797',
+            uid: uni.getStorageInfoSync('userInfo') ? uni.getStorageInfoSync('userInfo').uid : '43714797',
+            // uid: '43714797',
             start_date: '',
             end_date: ''
           };

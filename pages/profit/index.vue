@@ -274,8 +274,8 @@
         last_month_total_income: 0, // 上月预估收入
         month_total_income: 0, // 本月预估收入
         orderParams: {
-          // uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
-          uid: '43714797',
+          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
+          // uid: '43714797',
           start_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}'),
           end_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}')
         },
@@ -302,8 +302,8 @@
     methods: {
       // 获取订单数据
       getOrderData() {
-        // this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
-        this.orderParams.uid = '43714797'
+        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
+        // this.orderParams.uid = '43714797'
         this.$Qapi._getOrderData({
           data: JSON.stringify({ ...this.orderParams
           })
