@@ -5,6 +5,7 @@
 		</view>
 		<GoodsList 
 			:isShare="isShare"
+			:loginStatus="loginStatus"
 			:goodsList="fspList"
 			:scrollTop="scrollTop"
 			@tapGoodsItemHandler="tapGoodsItemHandler"/>
@@ -27,12 +28,15 @@
 					sort_type: 1,
 					response_type: 1
 				},
-				isShare: 0 // 是否分享
+				isShare: 0, // 是否分享
+				loginStatus: null // 登录状态
 			}
 		},
 		onShow() {
-			this.init();
-			this.isShare = uni.getStorageSync('isShare') ? uni.getStorageSync('isShare') : 0;
+			let that = this;
+			that.init();
+			that.loginStatus = loginStatus();
+			that.isShare = uni.getStorageSync('isShare');
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;

@@ -104,12 +104,20 @@
 				<text>首页</text>
 			</view>
 			<view class="handler-btn">
-				<view class="buy-self" @tap="jumpOtherApp()">
-					<text>自己买</text>
-					<text>省{{ allCash }}元</text>
-				</view>
+				<template v-if="queryParams.isShare == 1">
+					<view class="buy-self" @tap="jumpOtherApp()">
+						<text>购买</text>
+					</view>
+				</template>
+				<template v-else>
+					<view class="buy-self" @tap="jumpOtherApp()">
+						<text>自己买</text>
+						<text>省{{ allCash }}元</text>
+					</view>
+				</template>
+				
 				<template v-if="loginStatus && queryParams.isShare != 1">
-					<button class="buy-share" open-type="share" app-id="wx91d27dbf599dff74">
+					<button class="buy-share" open-type="share">
 						<text>分享让好友购买</text>
 						<text>赚{{ return_cash }}元</text>
 					</button>
@@ -197,10 +205,7 @@ export default {
 		if (that.queryParams.purchaseUrl) {
 			that.parentPurchaseUrl = that.queryParams.purchaseUrl;
 		}
-		if (uni.getStorageSync('isShare') == 1){
-			that.queryParams.isShare = uni.getStorageSync('isShare');
-		}
-		if (that.queryParams.isShare == 1 && that.queryParams.parent_uid) {
+		if (that.queryParams.isShare == 1) {
 			uni.setStorage({
 				key: 'isShare',
 				data: that.queryParams.isShare,
@@ -211,7 +216,9 @@ export default {
 					console.log('setStorage: isShare -> fail');
 				}
 			});
-			
+		}
+		if (that.queryParams.parent_uid) {
+			// 这里不用担心父uid错乱的原因，因为登录成功后删除了parent_uid
 			uni.setStorage({
 				key: 'parent_uid',
 				data: that.queryParams.parent_uid,
@@ -223,7 +230,6 @@ export default {
 				}
 			});
 		}
-		that.loginStatus = loginStatus();
 		that.init();
 	},
 	onShow() {

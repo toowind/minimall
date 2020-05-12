@@ -35,13 +35,17 @@
 						<text>原价¥{{item.min_group_price}}</text>
 					</view>
 				</view>
-				<view class="r-btn" v-if="isShare == 0">
-					<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
-					<text class="vm">分享赚¥{{ item.fxz }}</text>
-				</view>
-				<view class="r-btn" v-else>
-					<text class="vm">去购买</text>
-				</view>
+				<template v-if="isShare == 1">
+					<view class="r-btn">
+						<text class="vm">立即购买</text>
+					</view>
+				</template>
+				<template v-else>
+					<view class="r-btn">
+						<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
+						<text class="vm">分享赚¥{{ item.fxz }}</text>
+					</view>
+				</template>
 			</view>
 		</view>
 	</view>
@@ -51,16 +55,25 @@
 import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 export default {
 	props:{
+		// 商品数据
 		goodsList: {
 			type: Array,
 			required: true,
 			default: () => []
 		},
+		// 滚动距离
 		scrollTop: {
 			type: Number,
 			required: true,
 			default: 0
 		},
+		// 登录状态
+		loginStatus: {
+			type: Boolean,
+			required: true,
+			default: false
+		},
+		// 是否分享 0为A 1为A分享给B
 		isShare: {
 			type: Number,
 			required: true,

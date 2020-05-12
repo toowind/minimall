@@ -5,6 +5,7 @@
 		</view>
 		<GoodsList 
 			:isShare="isShare"
+			:loginStatus="loginStatus"
 			:goodsList="fspList"
 			:scrollTop="scrollTop"
 			@tapGoodsItemHandler="tapGoodsItemHandler"/>
@@ -31,8 +32,10 @@
 			}
 		},
 		onShow() {
-			this.init();
-			this.isShare = uni.getStorageSync('isShare') ? uni.getStorageSync('isShare') : 0;
+			let that = this;
+			that.init();
+			that.loginStatus = loginStatus();
+			that.isShare = uni.getStorageSync('isShare');
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;

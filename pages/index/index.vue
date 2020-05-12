@@ -37,7 +37,7 @@
 				</swiper>
 			</view>
 			<view class="nav-list">
-				<view class="nav-item" 
+				<view class="nav-item"
 					  @tap="onNavTapHandler(nav)"
 					  v-for="(nav, index) in navListArr" 
 					  :key="nav.imgUrl">
@@ -75,25 +75,26 @@
 			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
 			<GoodsList
 				:isShare="isShare"
+				:loginStatus="loginStatus"
 				:goodsList="goodsList"
 				:scrollTop="scrollTop"
 				@tapGoodsItemHandler="tapGoodsItemHandler"/>
 		</view>
 		<uni-popup ref="popup" type="center">
-				<view class="idx-lipboard-wrap">
-					<view class="l-title">{{ linkType === 1 ? '识别到以下链接': '是否搜索商品' }}</view>
-					<view class="l-cont" v-html="clipboardData"></view>
-					<view class="l-handler">
-						<view class="ignore" @tap="lipboardHandler(1)">忽略</view>
-						<block v-if="linkType === 1">
-							<view class="spin-chain" @tap="lipboardHandler(2)">立即转链</view>
-						</block>
-						<block v-if="linkType === 2">
-							<view class="spin-chain" @tap="lipboardHandler(3)">立即搜索</view>
-						</block>
-					</view>
+			<view class="idx-lipboard-wrap">
+				<view class="l-title">{{ linkType === 1 ? '识别到以下链接': '是否搜索商品' }}</view>
+				<view class="l-cont" v-html="clipboardData"></view>
+				<view class="l-handler">
+					<view class="ignore" @tap="lipboardHandler(1)">忽略</view>
+					<block v-if="linkType === 1">
+						<view class="spin-chain" @tap="lipboardHandler(2)">立即转链</view>
+					</block>
+					<block v-if="linkType === 2">
+						<view class="spin-chain" @tap="lipboardHandler(3)">立即搜索</view>
+					</block>
 				</view>
-			</uni-popup>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -154,7 +155,8 @@
 				linkType: null, // 1. 京东商品 2.其他商品
 				scrollTop: 0,
 				idxNavPt: 0,
-				isShare: 0 // 是否分享
+				isShare: 0, // 是否分享
+				loginStatus: null // 登录状态
 			}
 		},
 		onLoad() {
@@ -164,8 +166,10 @@
 			this.readyInit();
 		},
 		async onShow() {
-			await this.$methods.checkIsNetwork();
-			this.isShare = uni.getStorageSync('isShare') ? uni.getStorageSync('isShare') : 0;
+			let that = this;
+			await that.$methods.checkIsNetwork();
+			that.loginStatus = loginStatus();
+			that.isShare = uni.getStorageSync('isShare');
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
@@ -189,7 +193,7 @@
 				return false;
 			}
 			goodsListParams.page ++;
-			this.getGoodsList();
+			that.getGoodsList();
 		},
 		methods: {
 			async init () {

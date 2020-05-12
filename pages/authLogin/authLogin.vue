@@ -59,6 +59,7 @@
 						setUserInfo(data);
 						uni.removeStorageSync('tempAuth'); // 删除临时用户信息
 						uni.removeStorageSync('parent_uid'); // 删除父uid
+						uni.removeStorageSync('isShare'); // 删除isShare
 						uni.hideToast();
 						uni.showToast({
 							title: '授权成功',
