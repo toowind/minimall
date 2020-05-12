@@ -75,7 +75,7 @@
 			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
 			<GoodsList
 				:isShare="isShare"
-				:goodsList="goodsList"
+				:goodsList="allGoodsList[TabCur]"
 				:scrollTop="scrollTop"
 				@tapGoodsItemHandler="tapGoodsItemHandler"/>
 		</view>
@@ -113,6 +113,8 @@
 				menuIsFixed: false, // 菜单是否固定
 				menuList: [], // 菜单列表数据
 				goodsList: [], // 商品列表数据
+        allGoodsList: {},
+        listScrollTop:{},
 				activityList: [], // 活动列表数据
 				goodsNoMore: false, // 是否还有更多数据,若还有更多数据，则传入false, 否则传入true.
 				goodsListParams: { // 商品列表参数
@@ -176,6 +178,7 @@
 			} else {
 				that.menuIsFixed = false;
 			}
+      this.listScrollTop[this.TabCur] = scrollTop
 		},
 		onReachBottom (e) {
 			let that = this,
@@ -220,11 +223,18 @@
 					page: 1,
 					opt_id
 				});
-				this.getGoodsList();
-				uni.pageScrollTo({
-					scrollTop: that.menuScrollTop,
-					duration: 300
-				});
+        if (this.allGoodsList[that.TabCur]) {
+        	uni.pageScrollTo({
+        		scrollTop: this.listScrollTop[that.TabCur],
+        		duration: 16
+        	})
+        } else {
+          this.getGoodsList();
+          uni.pageScrollTo({
+            scrollTop: that.menuScrollTop,
+            duration: 16
+          });
+        }
 			},
 			// 触碰搜索输入框
 			tapSearchHandler () {
@@ -272,9 +282,11 @@
 							item.yx = item.orderCount30days >=10000 ? `${(item.orderCount30days/10000).toFixed(2)}万` : item.orderCount30days;
 						})
 						if (that.goodsListParams.page == 1) {
-							that.goodsList = data;	
+							that.goodsList = data;
+              that.allGoodsList[that.TabCur] = data
 						} else {
-							that.goodsList = [...that.goodsList, ...data];	
+							that.goodsList = [...that.goodsList, ...data];
+              that.allGoodsList[that.TabCur].push(...data)
 						}
 					}
 				} catch (e) {
