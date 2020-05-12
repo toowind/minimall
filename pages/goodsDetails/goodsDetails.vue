@@ -106,7 +106,7 @@
 			<view class="handler-btn">
 				<template v-if="queryParams.isShare == 1">
 					<view class="buy-self" @tap="jumpOtherApp()">
-						<text>购买</text>
+						<text>立即购买</text>
 					</view>
 				</template>
 				<template v-else>
