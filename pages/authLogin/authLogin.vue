@@ -11,6 +11,38 @@
 <script>
 	import { setToken, setUserInfo } from '@/utils/auth.js'
 	export default {
+		data () {
+			return {
+				paramsInfo: {}
+			}
+		},
+		async onLoad(params) {
+			let that = this;
+			that.paramsInfo = params;
+			try {
+				let tempAuthData = uni.getStorageSync('tempAuth');
+				if (!tempAuthData) {
+					uni.login({
+					  provider: 'weixin',
+					  success: async (loginRes) => {
+						uni.hideLoading();
+						uni.showLoading({
+							title: '获取登录信息...',
+							mask: true // 是否显示透明蒙层，防止触摸穿透
+						});
+						let {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
+						uni.hideLoading();	
+						if (status === that.$resCode.successCode) {
+							setToken(data.token);
+							uni.setStorageSync('tempAuth', JSON.stringify(data));
+						}
+					  }
+					});
+				}
+			} catch (e) {
+				console.log(e, 'error -> uni.login || _wechatStart');
+			}
+		},
 		methods: {
 			async auth ({detail}) {
 				let that = this;
@@ -18,13 +50,15 @@
 					let params = {
 						iv: detail.iv,
 						encryptedData: detail.encryptedData,
-						session_key: uni.getStorageSync('tempAuth') && JSON.parse(uni.getStorageSync('tempAuth'))['session_key']
+						session_key: uni.getStorageSync('tempAuth') && JSON.parse(uni.getStorageSync('tempAuth'))['session_key'],
+						parent_uid: uni.getStorageSync('parent_uid') ? uni.getStorageSync('parent_uid') : ''
 					};
 					let {status, data} = await that.$Kapi._wechatLogin(params);
 					if (status === that.$resCode.successCode) {
 						setToken(data.token);
 						setUserInfo(data);
 						uni.removeStorageSync('tempAuth'); // 删除临时用户信息
+						uni.removeStorageSync('parent_uid'); // 删除父uid
 						uni.hideToast();
 						uni.showToast({
 							title: '授权成功',
@@ -32,7 +66,17 @@
 							icon: 'success'
 						});
 						setTimeout(_ => {
-							uni.navigateBack();
+							// type->9为页面跳转 type->8为页面方法调用
+							if (that.paramsInfo.type == 9) {
+								that.$methods.jumpToPage({
+									jumpUrl: that.paramsInfo.jumpUrl,
+									reLaunch: that.paramsInfo.reLaunch
+								});
+							} else if (that.paramsInfo.type == 8){
+								uni.navigateBack();
+							} else {
+								uni.navigateBack();
+							}
 						}, 2000);
 					}
 				} else if (detail.errMsg === "getUserInfo:fail auth deny") {

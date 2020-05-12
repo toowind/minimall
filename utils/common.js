@@ -53,18 +53,9 @@ export default COMMON = (function (_undefined) {
         },
         methods: {
 			// 导航跳转到指定页面
-			jumpToPage ({jumpUrl, isLogin = false, switchTab = false}, params) {
+			jumpToPage ({jumpUrl = '', isLogin = false, switchTab = false, reLaunch = false}, params) {
 				let queryStr = '?',
 					url = jumpUrl;
-				if (isLogin) {
-					let ls = loginStatus();
-					if (!ls) {
-						uni.navigateTo({
-							url: '/pages/authLogin/authLogin'
-						});
-						return false
-					};
-				}
 				if (params && Object.keys(params).length > 0) {
 					for (let key in params) {
 						queryStr += key + '=' + params[key] + '&';
@@ -73,14 +64,25 @@ export default COMMON = (function (_undefined) {
 						queryStr = queryStr.substring(0, queryStr.length-1);
 					}
 				}
+				if (isLogin) {
+					let ls = loginStatus();
+					if (!ls) {
+						uni.navigateTo({
+							url: '/pages/authLogin/authLogin' + queryStr
+						});
+						return false;
+					};
+				}
 				if (switchTab) {
 					// wx.switchTab: url 不支持 queryString
+					// 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面。
 					uni.switchTab({url});
-					return;
+				} else if (reLaunch){
+					// 关闭所有页面，打开到应用内的某个页面。
+					uni.reLaunch({url: url + queryStr});
+				} else {
+					uni.navigateTo({url: url + queryStr});
 				}
-				uni.navigateTo({
-					url: url + queryStr
-				});
 			},
 			// 检查当前是否有网络
 			checkIsNetwork () {

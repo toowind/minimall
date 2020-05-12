@@ -35,9 +35,12 @@
 						<text>原价¥{{item.min_group_price}}</text>
 					</view>
 				</view>
-				<view class="r-btn">
+				<view class="r-btn" v-if="isShare == 0">
 					<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
 					<text class="vm">分享赚¥{{ item.fxz }}</text>
+				</view>
+				<view class="r-btn" v-else>
+					<text class="vm">去购买</text>
 				</view>
 			</view>
 		</view>
@@ -54,6 +57,11 @@ export default {
 			default: () => []
 		},
 		scrollTop: {
+			type: Number,
+			required: true,
+			default: 0
+		},
+		isShare: {
 			type: Number,
 			required: true,
 			default: 0
