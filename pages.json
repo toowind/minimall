@@ -70,7 +70,8 @@
 		{
 			"path": "pages/authLogin/authLogin",
 			"style": {
-				"navigationBarTitleText": "微信授权登录"
+				"navigationBarTitleText": "微信授权登录",
+        "navigationStyle": "custom"
 			}
 		},
 		{

@@ -370,9 +370,13 @@ export default {
 				data
 			} = await this.$Kapi._getUserInfo()
 			if (status == 0) {
-				data.map(item => {
+				data.map((item, index) => {
+          if (!item) {
+            item = this.userList[index]
+          }
 					const random = parseInt((Math.random() * 10)) + 1
-					item.cash = (e * random).toFixed(2)
+          item.cash = (e * random).toFixed(2)
+          return item
 				})
 				this.userList = data
 			} else {

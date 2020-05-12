@@ -290,6 +290,10 @@
     },
     components: {uniPopup, uniPopupDialog},
     onShow() {
+      this.tabsChange()
+    },
+    onTabItemTap(e) {
+      this.tabsActive = 1
       let ls = loginStatus();
       if (!ls) {
         uni.navigateTo({
@@ -297,7 +301,6 @@
         });
         return false
       };
-      this.tabsChange()
     },
     methods: {
       // 获取订单数据
@@ -351,12 +354,11 @@
           })
         }
       },
-      authFn() {
-        console.log('_--------认证---》》》》')
-        uni.navigateTo({
-          url: '/pages/profit/certifyUser'
-        })
-      },
+      // authFn() {
+      //   uni.navigateTo({
+      //     url: '/pages/profit/certifyUser'
+      //   })
+      // },
       tabsChange(e) {
         console.log('------>', e, this.tabsActive)
         if (this.tabsActive == e) {
