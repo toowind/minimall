@@ -1,16 +1,30 @@
 <template>
-	<view class="fx-auth-container">
-		<image src="@/static/images/common/logo@2x.png" class="auth-logo"></image>
-		<text class="text-1">该程序将获取以下授权</text>
-		<text class="text-2">获取您的公开信息(昵称、头像等)</text>
-		<button class="auth" open-type="getUserInfo" @getuserinfo="auth">授权</button>
-		<button class="cancel" @tap="cancel">取消</button>
-	</view>
+  <view class="authContainer">
+    <view class="navTitle" :style="{'padding-top': statusBar + 'px',height:customBar+'px'}">
+      <image class="back" src="@/static/images/profit/back_icon.png" mode="" @tap="cancel"></image>
+      <text>微信授权登录</text>
+      <text class="back"></text>
+    </view>
+    <view :style="{height: customBar -1 +'px'}"></view>
+    <view class="fx-auth-container">
+      <image src="@/static/images/common/logo@2x.png" class="auth-logo"></image>
+      <text class="text-1">该程序将获取以下授权</text>
+      <text class="text-2">获取您的公开信息(昵称、头像等)</text>
+      <button class="auth" open-type="getUserInfo" @getuserinfo="auth">授权</button>
+      <button class="cancel" @tap="cancel">取消</button>
+    </view>
+  </view>
 </template>
 
 <script>
 	import { setToken, setUserInfo } from '@/utils/auth.js'
 	export default {
+    data(){
+      return {
+        customBar: this.customBar,
+        statusBar: this.statusBar,
+      }
+    },
 		methods: {
 			async auth ({detail}) {
 				let that = this;
@@ -53,19 +67,40 @@
 			},
 			cancel () {
 				let pages = getCurrentPages();
-				if (pages[0].route.indexOf('pages/profit/index') >= 0) {
-					uni.switchTab({
-						url: '/pages/index/index'
-					});
+        console.log('--->', pages)
+				if (pages[0].route.indexOf('profit/index') > -1) {
+          uni.switchTab({
+          	url: '/pages/index/index'
+          });
 					return;
 				}
-				uni.navigateBack();
+        uni.navigateBack();
 			}
 		}
 	}
 </script>
 
 <style lang="scss">
+  .navTitle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color:rgba(51,51,51,1);
+    font-size:36rpx;
+    font-family:PingFangSC-Regular,PingFang SC;
+    font-weight:400;
+    background-color: #fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    .back {
+      width: 22rpx;
+      height: 36rpx;
+      margin-left: 28rpx;
+    }
+  }
 	page, .fx-auth-container{
 		background-color: #FFFFFF;
 		height: 100%;

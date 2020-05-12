@@ -188,6 +188,7 @@
 			goodsListParams.page ++;
 			this.getGoodsList();
 		},
+    
 		methods: {
 			async init () {
 				let that = this,
