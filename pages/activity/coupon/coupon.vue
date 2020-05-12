@@ -14,6 +14,7 @@
 
 <script>
 	import GoodsList from '@/components/goodsList/goodsList.vue'
+	import {loginStatus} from '@/utils/auth.js'
 	export default {
 		data () {
 			return {

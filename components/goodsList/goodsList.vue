@@ -35,12 +35,12 @@
 						<text>原价¥{{item.min_group_price}}</text>
 					</view>
 				</view>
-				<template v-if="isShare == 1">
+				<template v-if="isShare == 1 && !loginStatus">
 					<view class="r-btn">
 						<text class="vm">立即购买</text>
 					</view>
 				</template>
-				<template v-else>
+				<template v-if="isShare == 0">
 					<view class="r-btn">
 						<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
 						<text class="vm">分享赚¥{{ item.fxz }}</text>

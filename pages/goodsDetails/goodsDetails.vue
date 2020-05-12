@@ -1,5 +1,5 @@
 <template>
-	<view class="fx-gsDetails-container">
+	<view class="fx-gsDetails-container" v-if="Object.keys(productData).length">
 		<swiper v-if="return_cash" class="userListSwiperBox userListSwiper" :indicator-dots="false" :autoplay="true"
 		 :interval="3000" :duration="500" :vertical="true" circular>
 			<swiper-item class="items" v-for="(imgList,index) in userList" :key="index">
