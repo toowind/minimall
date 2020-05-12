@@ -73,7 +73,8 @@
 				</view>
 			</scroll-view>
 			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
-			<GoodsList 
+			<GoodsList
+				:isShare="isShare"
 				:goodsList="goodsList"
 				:scrollTop="scrollTop"
 				@tapGoodsItemHandler="tapGoodsItemHandler"/>
@@ -120,7 +121,7 @@
 					page_size:10
 				},
 				navListArr: [
-					{ 
+					{
 						text: '转换链接', 
 						imgUrl: require('@/static/images/index/home_one_icon@2x.png'), 
 						jumpUrl: '/pages/spinChain/spinChain' ,
@@ -152,7 +153,8 @@
 				clipboardData: null, // 剪切板数据
 				linkType: null, // 1. 京东商品 2.其他商品
 				scrollTop: 0,
-				idxNavPt: 0
+				idxNavPt: 0,
+				isShare: 0 // 是否分享
 			}
 		},
 		onLoad() {
@@ -163,6 +165,7 @@
 		},
 		async onShow() {
 			await this.$methods.checkIsNetwork();
+			this.isShare = uni.getStorageSync('isShare') ? uni.getStorageSync('isShare') : 0;
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
@@ -342,7 +345,11 @@
 			},
 			// 导航栏点击跳转页面
 			onNavTapHandler (nav) {
-				this.$methods.jumpToPage(nav);
+				this.$methods.jumpToPage(nav, {
+					type: 9, 
+					jumpUrl: '/pages/spinChain/spinChain',
+					reLaunch: true
+				});
 			},
 		},
 		components: {

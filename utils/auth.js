@@ -38,4 +38,6 @@ export function setUserInfo(data) {
 	return uni.setStorageSync(userInfo, data);
 }
 
-export function removeUserInfo() {}
+export function getUserinfo() {
+	return uni.getStorageSync(userInfo);
+}

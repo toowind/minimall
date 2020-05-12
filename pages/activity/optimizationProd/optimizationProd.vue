@@ -4,6 +4,7 @@
 			<image :src="bannerImg" mode="scaleToFill"></image>
 		</view>
 		<GoodsList 
+			:isShare="isShare"
 			:goodsList="fspList"
 			:scrollTop="scrollTop"
 			@tapGoodsItemHandler="tapGoodsItemHandler"/>
@@ -25,11 +26,13 @@
 					page_size: 10,
 					sort_type: 1,
 					response_type: 1
-				}
+				},
+				isShare: 0 // 是否分享
 			}
 		},
 		onShow() {
 			this.init();
+			this.isShare = uni.getStorageSync('isShare') ? uni.getStorageSync('isShare') : 0;
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
