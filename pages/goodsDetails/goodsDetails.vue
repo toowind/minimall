@@ -66,7 +66,7 @@
 					</view>
 				</view>
 				<view class="cupon_wrap_right">
-					<text class="participate_in">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
+					<text class="participate_in" @tap="jumpOtherApp()">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
 				</view>
 			</view>
 		</view>
@@ -77,7 +77,7 @@
 					<text class="text">*实际返利金额以最终到账为准,每月随收益发放*</text>
 			</view>
 		</view>
-		<view class="gs-copyOrder-wrap" @tap="copyOrderCont">
+		<view class="gs-copyOrder-wrap" @tap="copyOrderCont" v-if="loginStatus">
 			<view class="title">推荐文案, 点击复制</view>
 			<view class="name">[京东]{{ productData.goods_name }}</view>
 			<view class="line">----------------------------------</view>
@@ -235,6 +235,9 @@ export default {
 	onShow() {
 		let that = this;
 		that.loginStatus = loginStatus();
+		if (that.loginStatus) {
+			that.getProductShareUrl();
+		}
 	},
 	onShareAppMessage(res) {
 		let that = this,
@@ -265,7 +268,6 @@ export default {
 		init() {
 			let that = this;
 			that.getProductInfo();
-			that.getProductShareUrl();
 		},
 		// 导航跳转到指定页面
 		jumpToPage({

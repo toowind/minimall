@@ -171,7 +171,7 @@
 			let that = this;
 			await that.$methods.checkIsNetwork();
 			that.loginStatus = loginStatus();
-			that.isShare = uni.getStorageSync('isShare') ? 1 : 0;
+			that.isShare = uni.getStorageSync('isShare');
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
