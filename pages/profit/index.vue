@@ -274,7 +274,8 @@
         last_month_total_income: 0, // 上月预估收入
         month_total_income: 0, // 本月预估收入
         orderParams: {
-          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
+          // uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
+          uid: '43714797',
           start_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}'),
           end_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}')
         },
@@ -296,14 +297,13 @@
         });
         return false
       };
-    },
-    onHide() {
-      // this.$refs.showAuth.close()
+      this.tabsChange()
     },
     methods: {
       // 获取订单数据
       getOrderData() {
-        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
+        // this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
+        this.orderParams.uid = '43714797'
         this.$Qapi._getOrderData({
           data: JSON.stringify({ ...this.orderParams
           })
@@ -322,18 +322,6 @@
             this.orderData = data;
           }
         });
-      },
-      // 划转弹框
-      transferMoney() {
-        this.$refs.showTransfer.close();
-        let token = GetToken(),
-          getHost = this.$methods.getHost();
-        window.WebViewJavascriptBridge.callHandler(
-          "openSourceUrl", {
-            type: 0,
-            url: getHost + '/html/income/index.html?token=' + token
-          }
-        );
       },
       // 用户点击提现, 查看是否认证
       withdrawalThrottle: throttle('cashWithdrawal', 1000, 1),
@@ -370,6 +358,7 @@
         })
       },
       tabsChange(e) {
+        console.log('------>', e, this.tabsActive)
         if (this.tabsActive == e) {
           return;
         }

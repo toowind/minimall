@@ -14,7 +14,7 @@
     </swiper>
     <view class="gs-banner-wrap">
       <swiper class="swiper" :indicator-dots="true" :autoplay="true">
-        <swiper-item v-for="(banner, key) in productData.goods_gallery_urls.imageList" :key="banner.url">
+        <swiper-item v-for="(banner) in productData.goods_gallery_urls.imageList" :key="banner.url">
           <view class="swiper-item">
             <image :lazy-load="true" :src="banner.url"></image>
           </view>
@@ -91,7 +91,7 @@
     <view class="gs-goodsDetail-wrap" v-if="Object.keys(productData).length && productData.goods_gallery_urls.imageList.length">
       <view class="d-title">商品详情</view>
       <view class="d-cont">
-        <view class="d-item" v-for="(image, key) in productData.goods_gallery_urls.imageList" :key="image.url">
+        <view class="d-item" v-for="(image) in productData.goods_gallery_urls.imageList" :key="image.url">
           <easy-loadimage mode="widthFix" class="img" loading-mode="skeleton-1" :open-transition="false" :scroll-top="scrollTop"
             :image-src="image.url"></easy-loadimage>
         </view>

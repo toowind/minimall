@@ -71,26 +71,29 @@
       <!-- 已付款 -->
       <view class="list_container" v-show="tabsActive === 1">
         <order-list :orderType="getUserSelectOrderType[1]" :list="orderListObj[getUserSelectOrderType[1]].list" v-if="orderListObj[getUserSelectOrderType[1]].list.length > 0" />
-        <text class="noMoreData" v-else>- 我是有底线的 -</text>
+        <text class="noMoreData">- 我是有底线的 -</text>
       </view>
 
       <!-- 已完成 -->
       <view class="list_container" v-show="tabsActive === 2">
         <order-list :orderType="getUserSelectOrderType[2]" :list="orderListObj[getUserSelectOrderType[2]].list" v-if="orderListObj[getUserSelectOrderType[2]].list.length > 0" />
-        <text class="noMoreData" v-else>- 我是有底线的 -</text>
+        <text class="noMoreData">- 我是有底线的 -</text>
+        
       </view>
 
       <!-- 已结算 -->
       <view class="list_container" v-show="tabsActive === 3" >
         <order-list :orderType="getUserSelectOrderType[3]" :list="orderListObj[getUserSelectOrderType[3]].list" v-if="orderListObj[getUserSelectOrderType[3]].list.length > 0"/>
-        <text class="noMoreData" v-else>- 我是有底线的 -</text>
+        <text class="noMoreData">- 我是有底线的 -</text>
       </view>
 
       <!-- 已失效 -->
       <view class="list_container" v-show="tabsActive === 4" >
         <order-list :orderType="getUserSelectOrderType[4]" :list="orderListObj[getUserSelectOrderType[4]].list" v-if="orderListObj[getUserSelectOrderType[4]].list.length > 0"
           :user_rate_config="orderListObj[getUserSelectOrderType[4]].user_rate_config" />
-        <text class="noMoreData" v-else>- 我是有底线的 -</text>
+        <view class="noMoreData">
+          <text>- 我是有底线的 -</text>
+        </view>
       </view>
     </view>
     <!-- <van-popup class="date-time-wrap" position="bottom" :show="datetimeShow" closeable>
@@ -243,8 +246,10 @@
     },
     // 加载数据
     onReachBottom() {
-      this.orderParams.page++;
-      this.getOrderData(this.tabsActive);
+      if (!this.finished) {
+        this.orderParams.page++;
+        this.getOrderData(this.tabsActive);
+      }
     },
     methods: {
       // 初始化

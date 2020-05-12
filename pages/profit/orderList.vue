@@ -35,7 +35,7 @@
                     </view>
                     <view class="pay-royalty">
                         <text class="text1">技术服务费</text>
-                        <text class="text2">{{ (items.service_fee ? Number(items.service_fee / 100) : Number(items.service_fee)).toFixed(2) }}</text>
+                        <text class="text2">{{ doneFee(items.service_fee) }}</text>
                     </view>
                 </view>
             </view>
@@ -67,6 +67,13 @@ export default {
         uni.navigateTo({
           url:`/pages/goodsDetails/goodsDetails?id=${id}`
         })
+      },
+      doneFee(e) {
+        if (e) {
+          return e.toFixed(2)
+        } else {
+          return '0.00'
+        }
       }
     }
 }
@@ -76,6 +83,7 @@ export default {
 .o-c-list {
     display: flex;
     flex-direction: column;
+    padding-bottom: 20rpx;
     > view {
         padding-top: 20rpx;
         margin-bottom: 30rpx;
@@ -150,11 +158,11 @@ export default {
                       font-size: 26rpx;
                     }
                     .text2  {
-                      margin-top: 20rpx;
                       color: #333333;
-                      font-size: .4rpx;
+                      font-size: 40rpx;
                       font-family:DINAlternate-Bold,DINAlternate;
                       font-weight:bold;
+                      margin-left: 10rpx;
                     }
                 }
                 .pay-royalty {
