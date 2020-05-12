@@ -161,6 +161,9 @@
 		onReady() {
 			this.readyInit();
 		},
+		async onShow() {
+			await this.$methods.checkIsNetwork();
+		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
 			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件

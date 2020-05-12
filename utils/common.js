@@ -53,8 +53,7 @@ export default COMMON = (function (_undefined) {
         },
         methods: {
 			// 导航跳转到指定页面
-			jumpToPage ({jumpUrl, isLogin = false}, params) {
-				console.log(jumpUrl, isLogin)
+			jumpToPage ({jumpUrl, isLogin = false, switchTab = false}, params) {
 				let queryStr = '?',
 					url = jumpUrl;
 				if (isLogin) {
@@ -73,6 +72,11 @@ export default COMMON = (function (_undefined) {
 					if (queryStr.endsWith('&')) {
 						queryStr = queryStr.substring(0, queryStr.length-1);
 					}
+				}
+				if (switchTab) {
+					// wx.switchTab: url 不支持 queryString
+					uni.switchTab({url});
+					return;
 				}
 				uni.navigateTo({
 					url: url + queryStr
