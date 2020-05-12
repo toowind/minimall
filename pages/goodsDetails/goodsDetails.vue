@@ -153,7 +153,8 @@ import { loginStatus, getUserinfo } from '@/utils/auth.js'
           {avatar: 'http://res.youth.cn/avatar_202004_13_13o_5e9433394b39345918143v.jpg/120x120 ', nickname: '花朵'},
           {avatar: 'http://res.youth.cn/avatar_202004_13_130_5e94332e2015945918142a.jpg/120x120', nickname: '策离'},
           {avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang26.jpg/120x120 ', nickname: '洛洛憬'},
-        ]
+        ],
+		loginStatus: null
       }
     },
     onPageScroll({
@@ -162,10 +163,48 @@ import { loginStatus, getUserinfo } from '@/utils/auth.js'
       // 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
       this.scrollTop = scrollTop;
     },
+	onShareAppMessage(res) {
+		let that = this,
+			userinfo = getUserinfo();
+		if (res.from === 'button') {
+			return {
+				title: that.productData.goods_name,
+				imageUrl: that.productData.goods_gallery_urls[0],
+				path: `/pages/goodsDetails/goodsDetails?goods_id=${that.productData.goods_id}&isShare=1`
+			}
+		}
+	},
     onLoad(e) {
-      let that = this;
-      that.queryParams = e;
-      that.init();
+	  let that = this;
+	  that.queryParams = Object.assign(that.queryParams, e);
+	  if (uni.getStorageSync('isShare') == 1){
+	  	that.queryParams.isShare = uni.getStorageSync('isShare');
+	  }
+	  if (that.queryParams.isShare == 1 && that.queryParams.parent_uid) {
+	  	uni.setStorage({
+	  		key: 'isShare',
+	  		data: that.queryParams.isShare,
+	  		success() {
+	  			console.log('success');
+	  		},
+	  		fail() {
+	  			console.log('setStorage: isShare -> fail');
+	  		}
+	  	});
+	  	
+	  	uni.setStorage({
+	  		key: 'parent_uid',
+	  		data: that.queryParams.parent_uid,
+	  		success() {
+	  			console.log('success');
+	  		},
+	  		fail() {
+	  			console.log('setStorage: parent_uid -> fail');
+	  		}
+	  	});
+	  }
+	  that.loginStatus = loginStatus();
+	  that.init();
     },
     computed: {
       allCash() {
