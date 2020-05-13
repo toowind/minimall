@@ -4,7 +4,8 @@
 	export default {
 		globalData: {
 			type: null,
-			methodFnStr: null
+			methodFnStr: null,
+			applicationText: '朋友圈99%的人都在用的省钱神器，你不加入吗？'
 		},
 		onLaunch: function() {
 			this.init();

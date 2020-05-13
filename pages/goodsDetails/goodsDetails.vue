@@ -77,7 +77,7 @@
 					<text class="text">*实际返利金额以最终到账为准,每月随收益发放*</text>
 			</view>
 		</view>
-		<view class="gs-copyOrder-wrap" @tap="copyOrderCont" v-if="loginStatus">
+		<view class="gs-copyOrder-wrap" @tap="copyOrderCont" v-if="loginStatus && Object.keys(productShareUrl).length">
 			<view class="title">推荐文案, 点击复制</view>
 			<view class="name">[京东]{{ productData.goods_name }}</view>
 			<view class="line">----------------------------------</view>
@@ -116,8 +116,14 @@
 					</view>
 				</template>
 				
-				<template v-if="loginStatus && queryParams.isShare != 1">
+				<template v-if="loginStatus && queryParams.isShare != 1 && Object.keys(productShareUrl).length">
 					<button class="buy-share" open-type="share">
+						<text>分享让好友购买</text>
+						<text>赚{{ return_cash }}元</text>
+					</button>
+				</template>
+				<template v-if="loginStatus && queryParams.isShare != 1 && !Object.keys(productShareUrl).length">
+					<button class="buy-share" @tap="toast(`网络请求繁忙，请再试一次。`)">
 						<text>分享让好友购买</text>
 						<text>赚{{ return_cash }}元</text>
 					</button>
@@ -254,12 +260,19 @@ export default {
 	onShareAppMessage(res) {
 		let that = this,
 			userUid = getUserinfo()['uid'],
-			purchaseUrl = that.productShareUrl.purchaseUrl;
+			purchaseUrl = that.productShareUrl.purchaseUrl,
+			globalData = getApp().globalData;
 		if (res.from === 'button') {
 			return {
 				title: that.productData.goods_name,
 				imageUrl: that.productData.goods_gallery_urls[0],
 				path: `/pages/goodsDetails/goodsDetails?goods_id=${that.productData.goods_id}&isShare=1&parent_uid=${userUid}&purchaseUrl=${purchaseUrl}`
+			}
+		} else {
+			return {
+				title: globalData.applicationText,
+				imageUrl: 'http://view.youth.cn/20200428butionMall/imgs/img_0513.png',
+				path: `/pages/index/index`
 			}
 		}
 	},
@@ -369,7 +382,6 @@ export default {
 						{ status, data } = await that.$Kapi._getProductShareUrl(queryParams);
 					if (status === that.$resCode.successCode) {
 						that.productShareUrl = data;
-						console.log(1);
 						resolve(true)
 					} else {
 						reject(false)
@@ -473,6 +485,14 @@ export default {
 				end = value
 			}
 			return end
+		},
+		toast (title) {
+			uni.hideToast();
+			uni.showToast({
+				title: title,
+				duration: 3000,
+				icon: 'none'
+			});
 		}
 	},
 	components: {
