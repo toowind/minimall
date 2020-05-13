@@ -35,7 +35,7 @@
 						<text>原价¥{{item.min_group_price}}</text>
 					</view>
 				</view>
-				<template v-if="isShare == 1">
+				<template v-if="isShare">
 					<view class="r-btn">
 						<text class="vm">立即购买</text>
 					</view>

@@ -1,5 +1,5 @@
 <template>
-	<view class="fx-gsDetails-container">
+	<view class="fx-gsDetails-container" v-if="Object.keys(productData).length">
 		<swiper v-if="return_cash" class="userListSwiperBox userListSwiper" :indicator-dots="false" :autoplay="true"
 		 :interval="3000" :duration="500" :vertical="true" circular>
 			<swiper-item class="items" v-for="(imgList,index) in userList" :key="index">
@@ -66,7 +66,7 @@
 					</view>
 				</view>
 				<view class="cupon_wrap_right">
-					<text class="participate_in">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
+					<text class="participate_in" @tap="jumpOtherApp()">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
 				</view>
 			</view>
 		</view>
@@ -77,7 +77,7 @@
 					<text class="text">*实际返利金额以最终到账为准,每月随收益发放*</text>
 			</view>
 		</view>
-		<view class="gs-copyOrder-wrap" @tap="copyOrderCont">
+		<view class="gs-copyOrder-wrap" @tap="copyOrderCont" v-if="loginStatus">
 			<view class="title">推荐文案, 点击复制</view>
 			<view class="name">[京东]{{ productData.goods_name }}</view>
 			<view class="line">----------------------------------</view>
@@ -106,7 +106,7 @@
 			<view class="handler-btn">
 				<template v-if="queryParams.isShare == 1">
 					<view class="buy-self" @tap="jumpOtherApp()">
-						<text>购买</text>
+						<text>立即购买</text>
 					</view>
 				</template>
 				<template v-else>
@@ -235,6 +235,9 @@ export default {
 	onShow() {
 		let that = this;
 		that.loginStatus = loginStatus();
+		if (that.loginStatus) {
+			that.getProductShareUrl();
+		}
 	},
 	onShareAppMessage(res) {
 		let that = this,
@@ -265,7 +268,6 @@ export default {
 		init() {
 			let that = this;
 			that.getProductInfo();
-			that.getProductShareUrl();
 		},
 		// 导航跳转到指定页面
 		jumpToPage({
