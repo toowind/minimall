@@ -197,7 +197,7 @@
       </view>
       <button class="btn" open-type="contact"
         :show-message-card="true"
-        send-message-img="https://bkimg.cdn.bcebos.com/pic/b03533fa828ba61e1278147a4f34970a314e59d5?x-bce-process=image/resize,m_lfit,w_268,limit_1/format,f_jpg"
+        send-message-img="https://view.youth.cn/20200428butionMall/imgs/kfimg.png"
         send-message-path="/pages/index/index"
         send-message-title="每日折上折"
        >进入客服会话</button>
