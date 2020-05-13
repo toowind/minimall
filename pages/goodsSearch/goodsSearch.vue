@@ -104,7 +104,7 @@
 		},
 		onPageScroll (e) {
 			let that = this;
-			that.scrollTop = scrollTop;
+			that.scrollTop = e.scrollTop;
 			if (e.scrollTop > that.criteriaScrollTop) {
 				that.criteriaIsFixed = true;
 			} else {
