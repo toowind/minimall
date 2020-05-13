@@ -36,7 +36,7 @@
 			let that = this;
 			that.init();
 			that.loginStatus = loginStatus();
-			that.isShare = uni.getStorageSync('isShare');
+			that.isShare = uni.getStorageSync('isShare') ? 1 : 0;
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;

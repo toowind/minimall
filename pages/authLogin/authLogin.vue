@@ -17,108 +17,110 @@
 </template>
 
 <script>
-	import { setToken, setUserInfo } from '@/utils/auth.js'
-	export default {
-    data(){
-      return {
-        customBar: this.customBar,
-				statusBar: this.statusBar,
-				paramsInfo: {}
-      }
-    },
-		async onLoad(params) {
-			let that = this;
-			that.paramsInfo = params;
-			try {
-				let tempAuthData = uni.getStorageSync('tempAuth');
-				if (!tempAuthData) {
-					uni.login({
-					  provider: 'weixin',
-					  success: async (loginRes) => {
-						uni.hideLoading();
-						uni.showLoading({
-							title: '获取登录信息...',
-							mask: true // 是否显示透明蒙层，防止触摸穿透
-						});
-						let {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
-						uni.hideLoading();	
-						if (status === that.$resCode.successCode) {
-							setToken(data.token);
-							uni.setStorageSync('tempAuth', JSON.stringify(data));
-						}
-					  }
+import { setToken, setUserInfo } from '@/utils/auth.js'
+export default {
+	data(){
+	  return {
+		customBar: this.customBar,
+		statusBar: this.statusBar,
+		paramsInfo: {}
+	  }
+	},
+	async onLoad(params) {
+		let that = this;
+		that.paramsInfo = params;
+		try {
+			let tempAuthData = uni.getStorageSync('tempAuth');
+			if (!tempAuthData) {
+				uni.login({
+				  provider: 'weixin',
+				  success: async (loginRes) => {
+					uni.hideLoading();
+					uni.showLoading({
+						title: '获取登录信息...',
+						mask: true // 是否显示透明蒙层，防止触摸穿透
 					});
-				}
-			} catch (e) {
-				console.log(e, 'error -> uni.login || _wechatStart');
-			}
-		},
-		methods: {
-			async auth ({detail}) {
-				let that = this;
-				if(detail.errMsg === "getUserInfo:ok") {
-					let params = {
-						iv: detail.iv,
-						encryptedData: detail.encryptedData,
-						session_key: uni.getStorageSync('tempAuth') && JSON.parse(uni.getStorageSync('tempAuth'))['session_key'],
-						parent_uid: uni.getStorageSync('parent_uid') ? uni.getStorageSync('parent_uid') : ''
-					};
-					let {status, data} = await that.$Kapi._wechatLogin(params);
+					let {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
+					uni.hideLoading();	
 					if (status === that.$resCode.successCode) {
 						setToken(data.token);
-						setUserInfo(data);
-						uni.removeStorageSync('tempAuth'); // 删除临时用户信息
-						uni.removeStorageSync('parent_uid'); // 删除父uid
-						uni.removeStorageSync('isShare'); // 删除isShare
-						uni.hideToast();
-						uni.showToast({
-							title: '授权成功',
-							duration: 2000,
-							icon: 'success'
-						});
-						setTimeout(_ => {
-							// type->9为页面跳转 type->8为页面方法调用
-							if (that.paramsInfo.type == 9) {
-								that.$methods.jumpToPage({
-									jumpUrl: that.paramsInfo.jumpUrl,
-									reLaunch: that.paramsInfo.reLaunch
-								});
-							} else if (that.paramsInfo.type == 8){
-								uni.navigateBack();
-							} else {
-								uni.navigateBack();
-							}
-						}, 2000);
+						uni.setStorageSync('tempAuth', JSON.stringify(data));
 					}
-				} else if (detail.errMsg === "getUserInfo:fail auth deny") {
-					uni.hideToast();
-					uni.showToast({
-						title: '为了更好的服务，请同意授权',
-						duration: 2000,
-						icon: 'none'
-					});
-				} else {
-					uni.hideToast();
-					uni.showToast({
-						title: '授权失败',
-						duration: 2000,
-						icon: 'none'
-					});
-				}
-			},
-			cancel () {
-				let pages = getCurrentPages();
-        console.log('--->', pages)
-				if (pages[0].route.indexOf('profit/index') > -1) {
-          uni.switchTab({
-          	url: '/pages/index/index'
-          });
-					return;
-				}
-        uni.navigateBack();
+				  }
+				});
 			}
+		} catch (e) {
+			console.log(e, 'error -> uni.login || _wechatStart');
+		}
+	},
+	methods: {
+		async auth ({detail}) {
+			let that = this;
+			if(detail.errMsg === "getUserInfo:ok") {
+				let params = {
+					iv: detail.iv,
+					encryptedData: detail.encryptedData,
+					session_key: uni.getStorageSync('tempAuth') && JSON.parse(uni.getStorageSync('tempAuth'))['session_key'],
+					parent_uid: uni.getStorageSync('parent_uid') ? uni.getStorageSync('parent_uid') : ''
+				};
+				let {status, data} = await that.$Kapi._wechatLogin(params);
+				if (status === that.$resCode.successCode) {
+					setToken(data.token);
+					setUserInfo(data);
+					uni.removeStorageSync('tempAuth'); // 删除临时用户信息
+					uni.removeStorageSync('parent_uid'); // 删除父uid
+					uni.removeStorageSync('isShare'); // 删除isShare
+					uni.hideToast();
+					uni.showToast({
+						title: '授权成功',
+						duration: 2000,
+						icon: 'success'
+					});
+					setTimeout(_ => {
+						//  type->8为页面方法调用 type->9为页面跳转
+						if (that.paramsInfo.type == 8) {
+							var globalData = getApp().globalData;
+							globalData.type = 8;
+							globalData.methodFnStr = that.paramsInfo.methodFnStr;
+							uni.navigateBack();
+						} else if (that.paramsInfo.type == 9){
+							that.$methods.jumpToPage({
+								jumpUrl: that.paramsInfo.jumpUrl,
+								reLaunch: that.paramsInfo.reLaunch
+							});
+						} else {
+							uni.navigateBack();
+						}
+					}, 2000);
+				}
+			} else if (detail.errMsg === "getUserInfo:fail auth deny") {
+				uni.hideToast();
+				uni.showToast({
+					title: '为了更好的服务，请同意授权',
+					duration: 2000,
+					icon: 'none'
+				});
+			} else {
+				uni.hideToast();
+				uni.showToast({
+					title: '授权失败',
+					duration: 2000,
+					icon: 'none'
+				});
+			}
+		},
+		cancel () {
+			let pages = getCurrentPages();
+			if (pages[0].route.indexOf('profit/index') > -1) {
+				uni.switchTab({
+					url: '/pages/index/index'
+				});
+				return;
+			}
+			uni.navigateBack();
 		}
 	}
+}
 </script>
 
 <style lang="scss">

@@ -2,6 +2,10 @@
 	import Vue from 'vue';
 	import {setToken} from '@/utils/auth.js'
 	export default {
+		globalData: {
+			type: null,
+			methodFnStr: null
+		},
 		onLaunch: function() {
 			this.init();
 		},
@@ -32,8 +36,8 @@
 						  let that = this,
 							  {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
 							if (status === that.$resCode.successCode) {
-                console.log('--------openid ---->>', data.openid)
-                wx.aldstat.sendOpenid(data.openid)
+								console.log('--------openid ---->>', data.openid)
+								wx.aldstat.sendOpenid(data.openid)
 								setToken(data.token);
 								uni.setStorageSync('tempAuth', JSON.stringify(data));
 							}

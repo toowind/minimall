@@ -206,6 +206,7 @@ export default {
 			that.parentPurchaseUrl = that.queryParams.purchaseUrl;
 		}
 		if (that.queryParams.isShare == 1) {
+			// 其他地方会用到，不用担心，登录成功后会删除isShare
 			uni.setStorage({
 				key: 'isShare',
 				data: that.queryParams.isShare,
@@ -218,7 +219,10 @@ export default {
 			});
 		}
 		if (that.queryParams.parent_uid) {
-			// 这里不用担心父uid错乱的原因，因为登录成功后删除了parent_uid
+			/*
+				parent_uid在授权页面会用到师徒关联，很重要，请不要删除
+				这里不用担心父uid错乱的原因，因为登录成功后删除了parent_uid
+			*/
 			uni.setStorage({
 				key: 'parent_uid',
 				data: that.queryParams.parent_uid,
@@ -232,11 +236,19 @@ export default {
 		}
 		that.init();
 	},
-	onShow() {
-		let that = this;
+	async onShow() {
+		let that = this,
+			globalData = getApp().globalData;
 		that.loginStatus = loginStatus();
 		if (that.loginStatus) {
-			that.getProductShareUrl();
+			await that.getProductShareUrl();
+		}
+		if (globalData.type != null && globalData.methodFnStr != null) {
+			if (globalData.type === 8) {
+				await that[globalData.methodFnStr]();
+				globalData.type = null;
+				globalData.methodFnStr = null;
+			}
 		}
 	},
 	onShareAppMessage(res) {
@@ -349,21 +361,24 @@ export default {
 				console.log(e, 'error -> _getProductInfo');
 			}
 		},
-		async getProductShareUrl() {
-			try {
-				let that = this,
-					queryParams = that.queryParams,
-					{
-						status,
-						data
-					} = await that.$Kapi._getProductShareUrl(queryParams);
-				if (status === that.$resCode.successCode) {
-					that.productShareUrl = data;
-					console.log(data);
+		getProductShareUrl() {
+			return new Promise(async (resolve, reject) => {
+				try {
+					let that = this,
+						queryParams = that.queryParams,
+						{ status, data } = await that.$Kapi._getProductShareUrl(queryParams);
+					if (status === that.$resCode.successCode) {
+						that.productShareUrl = data;
+						console.log(1);
+						resolve(true)
+					} else {
+						reject(false)
+					}
+				} catch (e) {
+					console.log(e, 'error -> _getProductShareUrl');
+					reject(e);
 				}
-			} catch (e) {
-				console.log(e, 'error -> _getProductShareUrl');
-			}
+			})
 		},
 		// 获取滚动用户信息
 		async getUserInfo(e) {
@@ -408,7 +423,6 @@ export default {
 			} else {
 				purchaseUrl = that.productShareUrl.purchaseUrl
 			}
-			
 			if (this.isPg == 1 && this.isCoupon == 1) {
 				// 拼购券后价
 				appId = 'wxca1fe42a16552094';
@@ -422,6 +436,7 @@ export default {
 				// 返利价
 				appId = 'wx13e41a437b8a1d2e';
 			}
+			console.log(2);
 			wx.navigateToMiniProgram({
 				appId,
 				path: `pages/union/proxy/proxy?spreadUrl=${purchaseUrl}&EA_PTAG=17078.27.118`,

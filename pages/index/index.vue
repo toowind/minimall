@@ -72,7 +72,7 @@
 					</view>
 				</view>
 			</scroll-view>
-			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>			
+			<image class="idx-home-title" src="@/static/images/index/home_title_icon@2x.png"></image>
 			<GoodsList
 				:isShare="isShare"
 				:loginStatus="loginStatus"
@@ -95,12 +95,12 @@
 				</view>
 			</view>
 		</uni-popup>
+		<backToTop :scrollTop="scrollTop"/>
 	</view>
 </template>
 
 <script>
 	import uniPopup from '@/components/uni-popup/uni-popup.vue'
-	import noNetWork from '@/components/common/noNetWork/index.vue'
 	import GoodsList from '@/components/goodsList/goodsList.vue'
 	import {loginStatus} from '@/utils/auth.js'
 	export default {
@@ -145,7 +145,7 @@
 						id: 3,
 						isLogin: false
 					},
-					{ 
+					{
 						text: '优惠券', 
 						imgUrl: require('@/static/images/index/home_four_icon@2x.png'), 
 						jumpUrl: '/pages/activity/coupon/coupon',
@@ -158,7 +158,8 @@
 				scrollTop: 0,
 				idxNavPt: 0,
 				isShare: 0, // 是否分享
-				loginStatus: null // 登录状态
+				loginStatus: null, // 登录状态
+				isFristScroll: true // 是否第一次滚动
 			}
 		},
 		onLoad() {
@@ -171,7 +172,7 @@
 			let that = this;
 			await that.$methods.checkIsNetwork();
 			that.loginStatus = loginStatus();
-			that.isShare = uni.getStorageSync('isShare');
+			that.isShare = uni.getStorageSync('isShare') ? 1 : 0;
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
@@ -182,7 +183,7 @@
 			} else {
 				that.menuIsFixed = false;
 			}
-      this.listScrollTop[this.TabCur] = scrollTop
+			this.listScrollTop[this.TabCur] = scrollTop
 		},
 		onReachBottom (e) {
 			let that = this,
@@ -198,7 +199,6 @@
 			goodsListParams.page ++;
 			that.getGoodsList();
 		},
-    
 		methods: {
 			async init () {
 				let that = this,
@@ -227,18 +227,14 @@
 					page: 1,
 					opt_id
 				});
-        if (this.allGoodsList[that.TabCur]) {
-        	uni.pageScrollTo({
-        		scrollTop: this.listScrollTop[that.TabCur],
-        		duration: 16
-        	})
-        } else {
-          this.getGoodsList();
-          uni.pageScrollTo({
-            scrollTop: that.menuScrollTop,
-            duration: 16
-          });
-        }
+				if (this.allGoodsList[that.TabCur]) {
+					uni.pageScrollTo({
+						scrollTop: this.listScrollTop[that.TabCur],
+						duration: 500
+					})
+				} else {
+				  this.getGoodsList();
+				}
 			},
 			// 触碰搜索输入框
 			tapSearchHandler () {
@@ -287,10 +283,21 @@
 						})
 						if (that.goodsListParams.page == 1) {
 							that.goodsList = data;
-              that.allGoodsList[that.TabCur] = data
+							that.allGoodsList[that.TabCur] = data
+							// 第一次进入页面不滚动
+							if (that.isFristScroll) {
+								that.isFristScroll = false;
+							} else {
+								that.$nextTick(() => {
+									uni.pageScrollTo({
+										scrollTop: that.menuScrollTop,
+										duration: 500
+									});
+								});
+							}
 						} else {
 							that.goodsList = [...that.goodsList, ...data];
-              that.allGoodsList[that.TabCur].push(...data)
+							that.allGoodsList[that.TabCur].push(...data)
 						}
 					}
 				} catch (e) {
@@ -370,8 +377,7 @@
 		},
 		components: {
 			GoodsList,
-			uniPopup,
-			noNetWork
+			uniPopup
 		}
 	}
 </script>

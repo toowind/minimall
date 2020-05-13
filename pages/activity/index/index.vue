@@ -47,7 +47,7 @@
 				<text>立即参加</text>
 			</view>
 			<template v-if="loginStatus">
-				<button class="footer-item" open-type="share">
+				<button class="footer-item" open-type="share" id="login_btn">
 					<image src="@/static/images/activity/share_zj_icon@2x.png"></image>
 					<text>转发朋友</text>
 				</button>
@@ -87,7 +87,16 @@
 			}
 		},
 		onShow() {
-			this.loginStatus = loginStatus();
+			let that = this,
+				globalData = getApp().globalData;
+			that.loginStatus = loginStatus();
+			if (globalData.type != null && globalData.methodFnStr != null) {
+				if (globalData.type === 8) {
+					that[globalData.methodFnStr]();
+					globalData.type = null;
+					globalData.methodFnStr = null;
+				}
+			}
 		},
 		methods: {
 			// 复制活动文案
@@ -100,14 +109,17 @@
 					fail: () => {
 						console.log('setClipboardData->fail');
 					}
-				})
+				});
 			},
 			// 立即参加
 			joinNow () {
 				let ls = loginStatus();
 				if (!ls) {
-					uni.navigateTo({
-						url: '/pages/authLogin/authLogin'
+					this.$methods.jumpToPage({
+						jumpUrl: '/pages/authLogin/authLogin'
+					}, {
+						type: 8,
+						methodFnStr: 'joinNow'
 					});
 					return false
 				};
@@ -129,11 +141,11 @@
 			shareFriend () {
 				let ls = loginStatus();
 				if (!ls) {
-					uni.navigateTo({
-						url: '/pages/authLogin/authLogin'
+					this.$methods.jumpToPage({
+						jumpUrl: '/pages/authLogin/authLogin'
 					});
 					return false
-				};
+				}
 			}
 			
 		},

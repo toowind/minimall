@@ -1,54 +1,54 @@
 <template>
 	<view class="idx-cont-list">
-		<view class="cont-item" 
-			  v-for="(item, key) in goodsList" 
-			  :key="key"
-			  @tap="goodsItemHandler(item.goods_id)">
-			<view class="c-item-left">
-				<easyLoadimage 
-					class="img"
-					loading-mode="skeleton-1"
-					mode="widthFix"
-					:open-transition="false"
-					:scroll-top="scrollTop"
-					:image-src="item.goods_thumbnail_url"></easyLoadimage>
-			</view>
-			<view class="c-item-right">
-				<view class="r-title css-hide-2 vm">
-					<image class="vm" src="@/static/images/index/home_jd_icon@2x.png"></image>
-					<text class="vm">{{ item.goods_name }}</text>
+			<view class="cont-item" 
+				  v-for="(item, key) in goodsList" 
+				  :key="key"
+				  @tap="goodsItemHandler(item.goods_id)">
+				<view class="c-item-left">
+					<easyLoadimage 
+						class="img"
+						loading-mode="skeleton-1"
+						mode="widthFix"
+						:open-transition="false"
+						:scroll-top="scrollTop"
+						:image-src="item.goods_thumbnail_url"></easyLoadimage>
 				</view>
-				<view class="r-info">
-					<view class="quan"  v-if="item.isCoupon == 1 && item.coupon_discount > 0">
-						<image src="@/static/images/index/quan_icon@2x.png" mode=""></image>
-						<text>{{item.coupon_discount}}元</text>
+				<view class="c-item-right">
+					<view class="r-title css-hide-2 vm">
+						<image class="vm" src="@/static/images/index/home_jd_icon@2x.png"></image>
+						<text class="vm">{{ item.goods_name }}</text>
 					</view>
-					<text class="volume">月销{{ item.yx }}</text>
+					<view class="r-info">
+						<view class="quan"  v-if="item.isCoupon == 1 && item.coupon_discount > 0">
+							<image src="@/static/images/index/quan_icon@2x.png" mode=""></image>
+							<text>{{item.coupon_discount}}元</text>
+						</view>
+						<text class="volume">月销{{ item.yx }}</text>
+					</view>
+					<view class="r-price">
+						<view class="post-coupon">
+							<text>{{item.priceName}}</text>
+							<text>¥</text>
+							<text>{{item.present_price}}</text>
+						</view>
+						<view class="original-price">
+							<text>原价¥{{item.min_group_price}}</text>
+						</view>
+					</view>
+					<template v-if="isShare">
+						<view class="r-btn">
+							<text class="vm">立即购买</text>
+						</view>
+					</template>
+					<template v-else>
+						<view class="r-btn">
+							<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
+							<text class="vm">分享赚¥{{ item.fxz }}</text>
+						</view>
+					</template>
 				</view>
-				<view class="r-price">
-					<view class="post-coupon">
-						<text>{{item.priceName}}</text>
-						<text>¥</text>
-						<text>{{item.present_price}}</text>
-					</view>
-					<view class="original-price">
-						<text>原价¥{{item.min_group_price}}</text>
-					</view>
-				</view>
-				<template v-if="isShare">
-					<view class="r-btn">
-						<text class="vm">立即购买</text>
-					</view>
-				</template>
-				<template v-else>
-					<view class="r-btn">
-						<image class="vm" src="@/static/images/index/btn_share_icon@2x.png" mode=""></image>
-						<text class="vm">分享赚¥{{ item.fxz }}</text>
-					</view>
-				</template>
 			</view>
 		</view>
-	</view>
 </template>
 
 <script>
@@ -94,6 +94,7 @@ export default {
 
 <style lang="scss">
 .idx-cont-list {
+	min-height: 100px;
 	background-color: #FFFFFF;
 	.cont-item {
 		padding: 25rpx;
