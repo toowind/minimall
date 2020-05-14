@@ -416,6 +416,8 @@
 			
 		}
 		.idx-top-wrap {
+			display: flex;
+			flex-direction: column;
 			z-index: 1;
 			// margin-top: 15rpx;
 			.t-bg {
@@ -427,6 +429,8 @@
 				top: 0;
 			}
 			.t-search-wrap {
+				margin-top: 10rpx;
+				flex: 1;
 				padding: 0 25rpx;
 				position: relative;
 				width: 100%;
@@ -456,8 +460,7 @@
 			.t-tip {
 				padding: 0 25rpx;
 				width: 100%;
-				margin-top: 35rpx;
-				margin-bottom: 25rpx;
+				margin: 25rpx 0;
 				height: 34rpx;
 			}
 		}

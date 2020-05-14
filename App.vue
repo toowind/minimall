@@ -59,7 +59,7 @@
 							Vue.prototype.customBar = e.statusBarHeight + 50; 
 						}else {  
 							Vue.prototype.customBar = e.statusBarHeight + 45;  
-						}  
+						}
 						// #endif  
 						
 						// #ifdef MP-WEIXIN  
