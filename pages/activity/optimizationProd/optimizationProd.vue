@@ -4,11 +4,13 @@
 			<image :src="bannerImg" mode="scaleToFill"></image>
 		</view>
 		<GoodsList 
+			:isRanking="true"
 			:isShare="isShare"
 			:loginStatus="loginStatus"
 			:goodsList="fspList"
 			:scrollTop="scrollTop"
 			@tapGoodsItemHandler="tapGoodsItemHandler"/>
+		<backToTop :scrollTop="scrollTop"/>
 	</view>
 </template>
 

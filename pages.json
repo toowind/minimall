@@ -71,7 +71,7 @@
 			"path": "pages/authLogin/authLogin",
 			"style": {
 				"navigationBarTitleText": "微信授权登录",
-        "navigationStyle": "custom"
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -92,7 +92,7 @@
 			"style": {
 				"navigationBarTitleText": "订单",
 				"onReachBottomDistance":100,
-        "navigationStyle": "custom"
+				"navigationStyle": "custom"
 			}
 		}
 	],

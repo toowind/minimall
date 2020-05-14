@@ -159,7 +159,8 @@
 				idxNavPt: 0,
 				isShare: 0, // 是否分享
 				loginStatus: null, // 登录状态
-				isFristScroll: true // 是否第一次滚动
+				isFristScroll: true, // 是否第一次滚动
+				isPageScroll: true // 在回滚之前列表的时候，防止最新的值赋值导致回滚定位错误的问题
 			}
 		},
 		onLoad() {
@@ -183,7 +184,10 @@
 			} else {
 				that.menuIsFixed = false;
 			}
-			this.listScrollTop[this.TabCur] = scrollTop
+			if (that.isPageScroll === true) {
+				this.listScrollTop[this.TabCur] = scrollTop;
+			}
+			
 		},
 		onReachBottom (e) {
 			let that = this,
@@ -228,10 +232,16 @@
 					opt_id
 				});
 				if (this.allGoodsList[that.TabCur]) {
-					uni.pageScrollTo({
-						scrollTop: this.listScrollTop[that.TabCur],
-						duration: 500
-					})
+					that.isPageScroll = false;
+					that.$nextTick(() => {
+						uni.pageScrollTo({
+							scrollTop: this.listScrollTop[that.TabCur],
+							duration: 200,
+							success: (e) => {
+								that.isPageScroll = true;
+							}
+						})
+					});
 				} else {
 				  this.getGoodsList();
 				}
@@ -429,7 +439,7 @@
 				top: 0;
 			}
 			.t-search-wrap {
-				margin-top: 10rpx;
+				margin-top: 17rpx;
 				flex: 1;
 				padding: 0 25rpx;
 				position: relative;
@@ -450,7 +460,7 @@
 					font-weight:400;
 					color: #666666;
 					width: 100%;
-					height: 70rpx;
+					height: 72rpx;
 					box-shadow:0px 5px 8px 0px rgba(151,3,3,0.12);
 					border-radius:10px;
 					background-color: #ffffff;
@@ -460,7 +470,7 @@
 			.t-tip {
 				padding: 0 25rpx;
 				width: 100%;
-				margin: 25rpx 0;
+				margin: 35rpx 0 30rpx 0;
 				height: 34rpx;
 			}
 		}
@@ -479,8 +489,8 @@
 				height: 510rpx;
 				left: 0;
 				top: -435rpx;
-				background: url('http://view.youth.cn/20200428butionMall/imgs/top_bg.png') no-repeat center;
-				background-size: cover;
+				background: url('http://view.youth.cn/20200428butionMall/imgs/top_bg.png') no-repeat bottom center;
+				background-size: contain;
 			}
 			.swiper {
 				height:290rpx;

@@ -9,6 +9,7 @@
 			:goodsList="fspList"
 			:scrollTop="scrollTop"
 			@tapGoodsItemHandler="tapGoodsItemHandler"/>
+		<backToTop :scrollTop="scrollTop"/>
 	</view>
 </template>
 

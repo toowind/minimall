@@ -143,10 +143,6 @@
       </view>
     </view>
   </view>
-  <!-- <uni-popup ref="showAuth" type="dialog">
-    <uni-popup-dialog content="为保障账户安全, 请完成实名认证" :before-close="true" @confirm="authFn"
-     @close="$refs.showAuth.close()" confirm-text="去认证" confirm-color="#EA4E3D"></uni-popup-dialog>
-  </uni-popup> -->
 
 
   <uni-popup ref="showTransfer" :maskClick="false" class="transfer-container">
@@ -210,7 +206,6 @@
   import { getToken, loginStatus, setUserInfo } from '@/utils/auth.js'	
   import uniPopup from '@/components/uni-popup/uni-popup.vue'
   import uniPopupDialog from '@/components/uni-popup/uni-popup-dialog.vue'
-  // import {_getUserData, _getOrderData, _withdraw} from '@/api/module/user.js'
   /**
    * @desc 函数节流
    * @param func 函数
@@ -274,8 +269,7 @@
         last_month_total_income: 0, // 上月预估收入
         month_total_income: 0, // 本月预估收入
         orderParams: {
-          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797',
-          // uid: '43714797',
+          uid: uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '',
           start_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}'),
           end_date: this.$dateFn.formatTime(new Date(), '{y}-{m}-{d}')
         },
@@ -290,23 +284,22 @@
     },
     components: {uniPopup, uniPopupDialog},
     onShow() {
-      this.tabsChange()
+		let ls = loginStatus();
+		if (!ls) {
+			uni.navigateTo({
+			  url: '/pages/authLogin/authLogin'
+			});
+			return false
+		};
+		this.tabsChange();
     },
     onTabItemTap(e) {
-      this.tabsActive = 1
-      let ls = loginStatus();
-      if (!ls) {
-        uni.navigateTo({
-          url: '/pages/authLogin/authLogin'
-        });
-        return false
-      };
+      this.tabsActive = 1;
     },
     methods: {
       // 获取订单数据
       getOrderData() {
-        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : '43714797'
-        // this.orderParams.uid = '43714797'
+        this.orderParams.uid = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo').uid : ''
         this.$Qapi._getOrderData({
           data: JSON.stringify({ ...this.orderParams
           })
@@ -354,13 +347,7 @@
           })
         }
       },
-      // authFn() {
-      //   uni.navigateTo({
-      //     url: '/pages/profit/certifyUser'
-      //   })
-      // },
       tabsChange(e) {
-        console.log('------>', e, this.tabsActive)
         if (this.tabsActive == e) {
           return;
         }
@@ -436,7 +423,6 @@
           this.$refs.isShowPopup1.open()
         } else if (e == 2) {
           this.$refs.isShowPopup2.open()
-          // this.isShowPopup2 = !this.isShowPopup2;
         }
       }
     }
