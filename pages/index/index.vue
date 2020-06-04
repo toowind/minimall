@@ -25,7 +25,7 @@
 				<swiper 
 					class="swiper" 
 					:indicator-dots="true" 
-					:autoplay="false" 
+					:autoplay="true" 
 					:duration="500">
 					<swiper-item v-for="(item, key) in activityList" :key="key">
 						<navigator class="swiper-nav" hover-class="none" :url="`/pages/activity/index/index?data=${JSON.stringify(item)}`">
@@ -86,12 +86,8 @@
 				<view class="l-cont" v-html="clipboardData"></view>
 				<view class="l-handler">
 					<view class="ignore" @tap="lipboardHandler(1)">忽略</view>
-					<block v-if="linkType === 1">
-						<view class="spin-chain" @tap="lipboardHandler(2)">立即转链</view>
-					</block>
-					<block v-if="linkType === 2">
-						<view class="spin-chain" @tap="lipboardHandler(3)">立即搜索</view>
-					</block>
+					<view v-if="linkType === 1" class="spin-chain" @tap.stop="lipboardHandler(2)">立即转链</view>
+					<view v-if="linkType === 2" class="spin-chain" @tap.stop="lipboardHandler(3)">立即搜索</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -203,6 +199,7 @@
 			goodsListParams.page ++;
 			that.getGoodsList();
 		},
+		onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
 		methods: {
 			async init () {
 				let that = this,
@@ -288,7 +285,7 @@
 							return false;
 						}
 						data.forEach(item => {
-							item.fxz = (Number(item.return_cash) * Number(item.user_percent || 1)).toFixed(2);
+							item.fxz = (Number(item.return_cash || item.return_cash_total) * Number(item.user_percent || 1)).toFixed(2);
 							item.yx = item.orderCount30days >=10000 ? `${(item.orderCount30days/10000).toFixed(2)}万` : item.orderCount30days;
 						})
 						if (that.goodsListParams.page == 1) {
@@ -344,15 +341,20 @@
 				let that = this;
 				uni.getClipboardData({
 				    success: function (res) {
-						let data = String(res.data).trim();
-						if (data) {
-							if (data.includes('jd.com')) {
-								that.linkType = 1;
-							} else {
-								that.linkType = 2;
+						let data = String(res.data).trim(),
+							prevClipboardData = null;
+						prevClipboardData = uni.getStorageSync('clipboardData') ? uni.getStorageSync('clipboardData') : null;
+						if (!prevClipboardData || prevClipboardData != data) {
+							if (data) {
+								if (data.includes('jd.com')) {
+									that.linkType = 1;
+								} else {
+									that.linkType = 2;
+								}
+								that.clipboardData = data;
+								that.$refs.popup.open();
+								uni.setStorageSync('clipboardData', data);
 							}
-							that.clipboardData = data;
-							that.$refs.popup.open();
 						}
 				    }
 				});
@@ -360,7 +362,7 @@
 			// 剪切板内容
 			lipboardHandler (status) {
 				let that = this;
-				 function httpString(s) {
+				function httpString(s) {
 					var reg= /(https?|http|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/g;
 					s = s.match(reg);
 					return(s)

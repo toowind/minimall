@@ -125,6 +125,7 @@
 			goodsParams.page ++;
 			that.getGoodsSearchData();
 		},
+		onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
 		methods: {
 			init() {
 				let that = this;
@@ -258,7 +259,7 @@
 							return false;
 						}
 						data.forEach(item => {
-							item.fxz = (Number(item.return_cash) * Number(item.user_percent || 1)).toFixed(2);
+							item.fxz = (Number(item.return_cash_total || item.return_cash) * Number(item.user_percent || 0.5)).toFixed(2);
 							item.yx = item.orderCount30days >=10000 ? `${(item.orderCount30days/10000).toFixed(2)}万` : item.orderCount30days;
 						})
 						if (that.goodsParams.page == 1) {

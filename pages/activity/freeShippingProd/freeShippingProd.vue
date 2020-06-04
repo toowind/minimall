@@ -45,6 +45,7 @@
 			// 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
 		    that.scrollTop = scrollTop;
 		},
+		onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
 		onReachBottom (e) {
 			let that = this,
 				goodsListParams = that.goodsListParams;
@@ -91,7 +92,7 @@
 								return false;
 							}
 							data.forEach(item => {
-								item.fxz = (Number(item.return_cash) * Number(item.user_percent || 1)).toFixed(2);
+								item.fxz = (Number(item.return_cash || item.return_cash_total) * Number(item.user_percent || 1)).toFixed(2);
 								item.yx = item.orderCount30days >=10000 ? `${(item.orderCount30days/10000).toFixed(2)}万` : item.orderCount30days;
 							})
 							if (that.goodsListParams.page == 1) {

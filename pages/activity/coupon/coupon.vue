@@ -40,7 +40,6 @@
 			that.init();
 			that.loginStatus = loginStatus();
 			that.isShare = uni.getStorageSync('isShare') ? 1 : 0;
-			
 		},
 		onPageScroll ({scrollTop}) {
 			let that = this;
@@ -61,6 +60,7 @@
 			goodsListParams.page ++;
 			that.getFspListData();
 		},
+		onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
 		methods: {
 			async init() {
 				let that = this,
@@ -93,7 +93,7 @@
 								return false;
 							}
 							data.forEach(item => {
-								item.fxz = (Number(item.return_cash) * Number(item.user_percent || 1)).toFixed(2);
+								item.fxz = (Number(item.return_cash || item.return_cash_total) * Number(item.user_percent || 1)).toFixed(2);
 								item.yx = item.orderCount30days >=10000 ? `${(item.orderCount30days/10000).toFixed(2)}万` : item.orderCount30days;
 							})
 							if (that.goodsListParams.page == 1) {

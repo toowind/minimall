@@ -1,5 +1,5 @@
 <template>
-  <view class="income">
+  <view class="income" v-if="loginStatus">
     <view class="navTitle" :style="{'padding-top': statusBar + 'px',height:customBar+'px'}">收益</view>
     <view ref="warp" :style="{'padding-top': customBar - 1 +'px'}">
       <view class="title">
@@ -280,18 +280,24 @@
           3: 7,
           4: 30
         },
+		loginStatus: false // 当前用户是否登录了
       }
     },
+	onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
     components: {uniPopup, uniPopupDialog},
-    onShow() {
-		let ls = loginStatus();
+	onShow() {
+		let that = this,
+			ls = loginStatus();
 		if (!ls) {
+			that.loginStatus = false;
 			uni.navigateTo({
 			  url: '/pages/authLogin/authLogin'
 			});
 			return false
-		};
-		this.tabsChange();
+		} else {
+			that.loginStatus = true;
+		}
+		that.tabsChange();
     },
     onTabItemTap(e) {
       this.tabsActive = 1;

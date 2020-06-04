@@ -26,29 +26,32 @@ export default {
 		paramsInfo: {}
 	  }
 	},
+	onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
 	async onLoad(params) {
 		let that = this;
 		that.paramsInfo = params;
 		try {
 			let tempAuthData = uni.getStorageSync('tempAuth');
-			if (!tempAuthData) {
-				uni.login({
-				  provider: 'weixin',
-				  success: async (loginRes) => {
-					uni.hideLoading();
-					uni.showLoading({
-						title: '获取登录信息...',
-						mask: true // 是否显示透明蒙层，防止触摸穿透
-					});
-					let {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
-					uni.hideLoading();	
-					if (status === that.$resCode.successCode) {
-						setToken(data.token);
-						uni.setStorageSync('tempAuth', JSON.stringify(data));
-					}
-				  }
-				});
+			if (tempAuthData) {
+				uni.removeStorageSync('tempAuth');
 			}
+			uni.login({
+			  provider: 'weixin',
+			  success: async (loginRes) => {
+				uni.hideLoading();
+				uni.showLoading({
+					title: '获取登录信息...',
+					mask: true // 是否显示透明蒙层，防止触摸穿透
+				});
+				let {status, data} = await that.$Kapi._wechatStart({code: loginRes.code});
+				uni.hideLoading();	
+				if (status === that.$resCode.successCode) {
+					setToken(data.token);
+					uni.setStorageSync('tempAuth', JSON.stringify(data));
+				}
+			  }
+			});
+			
 		} catch (e) {
 			console.log(e, 'error -> uni.login || _wechatStart');
 		}
@@ -65,11 +68,12 @@ export default {
 				};
 				let {status, data} = await that.$Kapi._wechatLogin(params);
 				if (status === that.$resCode.successCode) {
-					setToken(data.token);
-					setUserInfo(data);
 					uni.removeStorageSync('tempAuth'); // 删除临时用户信息
+					uni.removeStorageSync('token'); // 删除临时用户token
 					uni.removeStorageSync('parent_uid'); // 删除父uid
 					uni.removeStorageSync('isShare'); // 删除isShare
+					setToken(data.token);
+					setUserInfo(data);
 					uni.hideToast();
 					uni.showToast({
 						title: '授权成功',

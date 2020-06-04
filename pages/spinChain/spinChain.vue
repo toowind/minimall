@@ -90,6 +90,7 @@
 
 <script>
 	import uniPopup from '@/components/uni-popup/uni-popup.vue'
+	import { getUserinfo } from '@/utils/auth.js'
 	export default {
 		data () {
 			return {
@@ -123,12 +124,21 @@
 			}
 		},
 		onShareAppMessage (res) {
-			let that = this;
+			let that = this,
+				goods_id = that.transChainData.goods_id,
+				userUid = getUserinfo()['uid'],
+				purchaseUrl = that.transChainData.purchaseUrl;
 			if (res.from === 'button') {
 				return {
 				  title: `[京东]${that.transChainData.goods_name}`,
 				  imageUrl: that.transChainData.img,
-				  path: `/pages/goodsDetails/goodsDetails?goods_id=${that.transChainData.goods_id}`
+				  path: `/pages/goodsDetails/goodsDetails?goods_id=${goods_id}&isShare=1&parent_uid=${userUid}&purchaseUrl=${purchaseUrl}`
+				}
+			} else {
+				return {
+					title: "朋友圈99%的人都在用的省钱神器，你不加入吗？",
+					imageUrl: "http://view.youth.cn/20200428butionMall/imgs/share_thumb.png",
+					path: "/pages/index/index"
 				}
 			}
 		},
@@ -234,7 +244,12 @@
 				if (status === that.$resCode.successCode) {
 					that.linkType = 1;
 					that.transChainData = data;
-					that.linkCont = `[京东]${that.transChainData.goods_name}\n----------------------------------\n京东价:¥${that.transChainData.price}\n券后价: ¥${that.transChainData.discountPrice}\n抢购链接: ${that.transChainData.purchaseUrl}`;
+					that.fix_PN_PR();
+					if (that.transChainData.is_coupon) {
+						that.linkCont = `[京东]${that.transChainData.goods_name}\n----------------------------------\n🔥爆款冲量🔥\n❗原价:¥${that.transChainData.price}\n💰${that.transChainData.priceName.indexOf('超低') > -1?'超低价':that.transChainData.P_name}: ¥${that.transChainData.discountPrice}，快抢快抢\n下单链接👉: ${that.transChainData.purchaseUrl}`;
+					} else {
+						that.linkCont = `[京东]${that.transChainData.goods_name}\n----------------------------------\n疯了疯了💢\n${that.transChainData.is_pg == 1?'拼购价':'超低惊喜价'}:¥${that.isPg == 1?that.transChainData.discountPrice:that.transChainData.price}\n实惠到爆炸，不买太遗憾了👇\n入口👉: ${that.transChainData.purchaseUrl}`;
+					}
 					uni.setClipboardData({
 						data: that.linkCont,
 						success: () => {
@@ -255,6 +270,43 @@
 						}
 					})
 				}
+			},
+			fix_PN_PR() {
+				let that = this,
+					is_pg = that.transChainData.is_pg,
+					is_coupon = that.transChainData.is_coupon;
+				if (is_pg == 1 && is_coupon == 1) {
+					that.transChainData.P_name = '拼购券后价'
+				} else if (is_pg == 1 && is_coupon == 0) {
+					that.transChainData.P_name = '拼购价'
+				} else if (is_pg == 0 && is_coupon == 1) {
+					that.transChainData.P_name = '券后价'
+				} else if (is_pg == 0 && is_coupon == 0) {
+					that.transChainData.P_name = '返利价'
+				}
+			},
+			// 格式化金额
+			formaters(value) {
+				if (!value || Number(value) == 0) return ''
+				value = value.toString()
+				let end = ''
+				if (value.indexOf('.') > -1) {
+					let s = value.split('.')[0]
+					let s1 = value.split('.')[1] && value.split('.')[1].toString()
+					// 01
+					if (s1[0] == 0 && s1[1] == 0) {
+						end = s
+					} else if (s1[0] == 0 && s1[1] != 0) {
+						end = s + '.' + s1
+					} else if (s1[0] != 0 && s1[1] == 0) {
+						end = s + '.' + s1[0]
+					} else if (s1[0] != 0 && s1[1] != 0) {
+						end = s + '.' + s1
+					}
+				} else {
+					end = value
+				}
+				return end
 			},
 			// 清空推广链接文字
 			clearLinkCont () {

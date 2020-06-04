@@ -62,6 +62,7 @@ export default {
     mounted() {
       console.log('----------->>>', this.list)
     },
+	onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
     methods:{
       goTo(id) {
         uni.navigateTo({

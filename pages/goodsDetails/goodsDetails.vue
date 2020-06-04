@@ -1,6 +1,6 @@
 <template>
 	<view class="fx-gsDetails-container" v-if="Object.keys(productData).length">
-		<swiper v-if="return_cash" class="userListSwiperBox userListSwiper" :indicator-dots="false" :autoplay="true"
+		<swiper v-if="return_cash && userList.length" class="userListSwiperBox userListSwiper" :indicator-dots="false" :autoplay="true"
 		 :interval="3000" :duration="500" :vertical="true" circular>
 			<swiper-item class="items" v-for="(imgList,index) in userList" :key="index">
 				<image class="avatar" lazy-load :src="imgList.avatar" alt="" />
@@ -53,11 +53,11 @@
 						<text class="price">{{P_price}}</text>
 					</view>
 				</view>
-				<view class="earn">
+				<view class="earn" v-if="queryParams.isShare != 1">
 					<text>分享赚¥{{formaters(productData.return_cash)}}</text>
 				</view>
 			</view>
-			<view class="cupon_normal_wrap" v-if="coupon_discount * 1 != 0">
+			<view class="cupon_normal_wrap" @tap="jumpOtherApp()" v-if="coupon_discount * 1 != 0">
 				<view class="cupon_wrap_left">
 					<view class="cupon">
 						<text class="span_one">{{formaters(productData.coupon_discount)}}</text>
@@ -66,7 +66,7 @@
 					</view>
 				</view>
 				<view class="cupon_wrap_right">
-					<text class="participate_in" @tap="jumpOtherApp()">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
+					<text class="participate_in">{{ Number(productData.coupon_discount) == 0 ? "立即抢购" : "立即领券" }}</text>
 				</view>
 			</view>
 		</view>
@@ -84,7 +84,7 @@
 			<view class="context">
 				<view>{{isCoupon == 1?'🔥爆款冲量🔥':'疯了疯了💢'}}</view>
 				<view style="margin:.1rem 0;">{{isPg ==1 && isCoupon ==0?'拼购价':isCoupon == 1?'❗原价':'超低惊喜价'}}:¥{{ isPg ==1 && isCoupon==0?available_price:min_group_price}}</view>
-				<view style="margin:.1rem 0;" v-if="isCoupon == 1">{{'💰'+ priceName}}: ¥{{available_price}}</view>
+				<view style="margin:.1rem 0;" v-if="isCoupon == 1">{{'💰'+ P_name}}: ¥{{available_price}}</view>
 				<view style="margin:.1rem 0;" v-else>实惠到爆炸，不买太遗憾了👇</view>
 				<view>{{isCoupon == 1?'下单链接👉': '入口👉'}}: {{productShareUrl.purchaseUrl || ''}}</view>
 			</view>
@@ -93,8 +93,7 @@
 			<view class="d-title">商品详情</view>
 			<view class="d-cont">
 				<view class="d-item" v-for="(image, key) in productData.goods_gallery_urls.imageList" :key="image.url">
-					<easy-loadimage mode="widthFix" class="img" loading-mode="skeleton-1" :open-transition="false" :scroll-top="scrollTop"
-					 :image-src="image.url"></easy-loadimage>
+					 <image :src="image.url" class="img" mode="widthFix" ></image>
 				</view>
 			</view>
 		</view>
@@ -158,7 +157,6 @@ export default {
 			P_price: 0.00, // 商品展示价格
 			min_group_price: 0.00, // 商品原价
 			available_price: 0.00, // 返回价格
-			priceName: '',
 			imgList: {},
 			userList: [{
 					avatar: 'https://res.youth.cn/Public/Spare/avatar_180/touxiang36.jpg/120x120',
@@ -206,39 +204,46 @@ export default {
 		this.scrollTop = scrollTop;
 	},
 	onLoad(e) {
-		let that = this;
+		let that = this,
+			userUid = getUserinfo()['uid'];
 		that.queryParams = Object.assign(that.queryParams, e);
-		if (that.queryParams.purchaseUrl) {
-			that.parentPurchaseUrl = that.queryParams.purchaseUrl;
-		}
-		if (that.queryParams.isShare == 1) {
-			// 其他地方会用到，不用担心，登录成功后会删除isShare
-			uni.setStorage({
-				key: 'isShare',
-				data: that.queryParams.isShare,
-				success() {
-					console.log('success');
-				},
-				fail() {
-					console.log('setStorage: isShare -> fail');
+		/* 
+			如果A用户分享给B用户，B用户需要走以下块元素的流程
+				1.A用户的下单链接要赋值给B用户，当B用户购买时使用A用户标识的下单链接。
+				2.当前是否以分享的形式打开此页面，默认打开页面没有isShare字段，所以只有isShare等于1时才是分享卡片进入页面，记录标识，登录完成后授权页面会自动删掉该isShare，防止isShare错乱。
+				3.B用户在授权页面会用到parent_uid，进行A/B的师徒关联关系，登录完成后授权页面会自动删掉该parent_uid，防止uid错乱。
+		*/
+		{
+			// 如果当前用户处于登录状态 && 当前x用户不等于A用户（防止A用户分享卡片，自己打开自己分享的卡片导致业务流程错误bug）
+			if ((!userUid || userUid == undefined) || userUid != that.queryParams.parent_uid) {
+				if (that.queryParams.purchaseUrl) {
+					that.parentPurchaseUrl = that.queryParams.purchaseUrl;
 				}
-			});
-		}
-		if (that.queryParams.parent_uid) {
-			/*
-				parent_uid在授权页面会用到师徒关联，很重要，请不要删除
-				这里不用担心父uid错乱的原因，因为登录成功后删除了parent_uid
-			*/
-			uni.setStorage({
-				key: 'parent_uid',
-				data: that.queryParams.parent_uid,
-				success() {
-					console.log('success');
-				},
-				fail() {
-					console.log('setStorage: parent_uid -> fail');
+				if (that.queryParams.isShare == 1) {
+					uni.setStorage({
+						key: 'isShare',
+						data: that.queryParams.isShare,
+						success() {
+							console.log('success');
+						},
+						fail() {
+							console.log('setStorage: isShare -> fail');
+						}
+					});
 				}
-			});
+				if (that.queryParams.parent_uid) {
+					uni.setStorage({
+						key: 'parent_uid',
+						data: that.queryParams.parent_uid,
+						success() {
+							console.log('success');
+						},
+						fail() {
+							console.log('setStorage: parent_uid -> fail');
+						}
+					});
+				}
+			}
 		}
 		that.init();
 	},
@@ -246,10 +251,12 @@ export default {
 		let that = this,
 			globalData = getApp().globalData;
 		that.loginStatus = loginStatus();
+		// 如果当前用户是已登录状态
 		if (that.loginStatus) {
 			await that.getProductShareUrl();
 		}
 		if (globalData.type != null && globalData.methodFnStr != null) {
+			// 8为调用方法
 			if (globalData.type === 8) {
 				await that[globalData.methodFnStr]();
 				globalData.type = null;
@@ -265,13 +272,13 @@ export default {
 		if (res.from === 'button') {
 			return {
 				title: that.productData.goods_name,
-				imageUrl: that.productData.goods_gallery_urls[0],
+				imageUrl: that.productData.goods_gallery_urls.imageList[0]['url'],
 				path: `/pages/goodsDetails/goodsDetails?goods_id=${that.productData.goods_id}&isShare=1&parent_uid=${userUid}&purchaseUrl=${purchaseUrl}`
 			}
 		} else {
 			return {
 				title: globalData.applicationText,
-				imageUrl: 'http://view.youth.cn/20200428butionMall/imgs/img_0513.png',
+				imageUrl: 'http://view.youth.cn/20200428butionMall/imgs/share_thumb.png',
 				path: `/pages/index/index`
 			}
 		}
@@ -319,7 +326,7 @@ export default {
 			} else if (this.isPg == 0 && this.isCoupon == 0) {
 				this.P_name = '返利价'
 				this.P_price = this.formaters(this.available_price)
-				const n = (Number(this.min_group_price) - this.return_cash).toFixed(2)
+				const n = (Number(this.min_group_price) - this.return_cash).toFixed(0)
 				this.P_price = this.formaters(n)
 			}
 		},
@@ -366,7 +373,6 @@ export default {
 					this.coupon_discount = data.coupon_discount // 优惠券金额
 					this.min_group_price = data.min_group_price
 					this.available_price = Number(data.discountPrice)
-					this.priceName = data.priceName
 					this.fix_PN_PR()
 					this.getUserInfo(this.return_cash)
 				}
@@ -446,9 +452,8 @@ export default {
 				appId = 'wx91d27dbf599dff74';
 			} else if (this.isPg == 0 && this.isCoupon == 0) {
 				// 返利价
-				appId = 'wx13e41a437b8a1d2e';
+				appId = 'wx91d27dbf599dff74';
 			}
-			console.log(2);
 			wx.navigateToMiniProgram({
 				appId,
 				path: `pages/union/proxy/proxy?spreadUrl=${purchaseUrl}&EA_PTAG=17078.27.118`,

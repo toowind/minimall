@@ -13,7 +13,9 @@
 </template>
 
 <script>
-	
+	export default {
+		onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
+	}
 </script>
 
 <style lang="scss" scoped>

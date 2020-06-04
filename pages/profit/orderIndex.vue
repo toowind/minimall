@@ -251,6 +251,7 @@
         this.getOrderData(this.tabsActive);
       }
     },
+	onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
     methods: {
       // 初始化
       init() {

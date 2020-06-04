@@ -12,9 +12,10 @@
         token: ''
       }
     },
+	onShareAppMessage () {}, // 不要删除,详见app.vue的overShare方法.
     onLoad() {
     	this.getHost = 'http://shop.tgfwe.com';
-      this.token = getToken()
+		this.token = getToken()
     }
   }
 </script>

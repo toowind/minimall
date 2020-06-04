@@ -78,11 +78,19 @@
 			this.data = res;
 		},
 		onShareAppMessage(res) {
-			let that = this;
+			let that = this,
+				globalData = getApp().globalData;
 			if (res.from === "button") {
 				return {
 					title: that.data.title,
-					imageUrl: that.data.imgUrl  
+					imageUrl: that.data.imgUrl,
+					path: `/pages/activity/index/index?data=${JSON.stringify(this.data)}`
+				}
+			} else {
+				return {
+					title: globalData.applicationText,
+					imageUrl: 'http://view.youth.cn/20200428butionMall/imgs/share_thumb.png',
+					path: '/pages/index/index'
 				}
 			}
 		},
